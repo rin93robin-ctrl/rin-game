@@ -1,0 +1,256 @@
+{
+ "title": "凜界異聞錄",
+ "subtitle": "尋找失蹤的羅賓",
+ "tagline": "RiN凜 三週年企劃・小品互動",
+ "finaleTime": "2026-12-22T20:00:00+08:00",
+ "finaleText": "三週年直播・群像音樂劇",
+ "finaleUrl": "",
+ "reward": {
+  "text": "你找齊了所有線索！",
+  "url": ""
+ },
+ "titleBgm": "assets/bgm/title.mp3",
+ "meowSfx": "assets/sfx/meow.mp3",
+ "typeSpeedMs": 28,
+ "characters": {
+  "rin": {
+   "name": "凜",
+   "color": "#e9799f",
+   "img": "assets/char/rin.png"
+  },
+  "fairy": {
+   "name": "記憶妖精靈",
+   "color": "#9ad8c4",
+   "img": "assets/char/fairy.png"
+  },
+  "knight": {
+   "name": "龍騎士守衛",
+   "color": "#d4623b",
+   "img": "assets/char/knight.png"
+  },
+  "cyber": {
+   "name": "賽博情報商",
+   "color": "#38d6e8",
+   "img": "assets/char/cyber.png"
+  },
+  "librarian": {
+   "name": "魔法圖書員",
+   "color": "#9a7be0",
+   "img": "assets/char/librarian.png"
+  },
+  "fortune": {
+   "name": "神秘占卜師",
+   "color": "#7a4bb8",
+   "img": "assets/char/fortune.png"
+  },
+  "alchemist": {
+   "name": "煉金坊老闆",
+   "color": "#e0a93b",
+   "img": "assets/char/alchemist.png"
+  },
+  "singer": {
+   "name": "酒吧魅歌姬",
+   "color": "#e0587a",
+   "img": "assets/char/singer.png"
+  },
+  "captain": {
+   "name": "星劇團團長",
+   "color": "#5b6ee0",
+   "img": "assets/char/captain.png"
+  }
+ },
+ "acts": [
+  {
+   "id": 1,
+   "role": "fairy",
+   "unlock": "2026-12-09T19:00:00+08:00",
+   "bg": "assets/bg/act1.jpg",
+   "bgm": "assets/bgm/act1.mp3",
+   "colors": [
+    "#1b1f4a",
+    "#4b3b8f"
+   ],
+   "clue": {
+    "id": "clue1",
+    "name": "記憶之葉",
+    "desc": "妖精靈從記憶森林摘下的一片葉子，葉脈裡藏著一串通往城市的足跡。",
+    "icon": "assets/icon/clue1.png"
+   },
+   "egg": {
+    "id": "egg1",
+    "img": "assets/egg/act1.png",
+    "x": 12,
+    "y": 22,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 2,
+   "role": "knight",
+   "unlock": "2026-12-10T19:00:00+08:00",
+   "bg": "assets/bg/act2.jpg",
+   "bgm": "assets/bgm/act2.mp3",
+   "colors": [
+    "#2a2a3a",
+    "#6b5b4b"
+   ],
+   "clue": {
+    "id": "clue2",
+    "name": "騎士通行證",
+    "desc": "龍騎士守衛親手交給妳的通行證。情報商看見它，就會知道妳是被介紹來的。",
+    "icon": "assets/icon/clue2.png"
+   },
+   "egg": {
+    "id": "egg2",
+    "img": "assets/egg/act2.png",
+    "x": 80,
+    "y": 30,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 3,
+   "role": "cyber",
+   "unlock": "2026-12-11T19:00:00+08:00",
+   "bg": "assets/bg/act3.jpg",
+   "bgm": "assets/bgm/act3.mp3",
+   "colors": [
+    "#10102a",
+    "#6a1fa0"
+   ],
+   "clue": {
+    "id": "clue3",
+    "name": "ID情報卡",
+    "desc": "賽博情報商留下的情報卡，上面畫著圖書館的標誌。",
+    "icon": "assets/icon/clue3.png"
+   },
+   "egg": {
+    "id": "egg3",
+    "img": "assets/egg/act3.png",
+    "x": 20,
+    "y": 18,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 4,
+   "role": "librarian",
+   "unlock": "2026-12-12T19:00:00+08:00",
+   "bg": "assets/bg/act4.jpg",
+   "bgm": "assets/bgm/act4.mp3",
+   "colors": [
+    "#2a1a2e",
+    "#7a4f6a"
+   ],
+   "clue": {
+    "id": "clue4",
+    "name": "異界生物與靈性契約大全",
+    "desc": "魔法圖書員借給妳的古書，記載著守護靈與人類之間的連結。",
+    "icon": "assets/icon/clue4.png"
+   },
+   "egg": {
+    "id": "egg4",
+    "img": "assets/egg/act4.png",
+    "x": 75,
+    "y": 26,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 5,
+   "role": "fortune",
+   "unlock": "2026-12-13T19:00:00+08:00",
+   "bg": "assets/bg/act5.jpg",
+   "bgm": "assets/bgm/act5.mp3",
+   "colors": [
+    "#1c0f33",
+    "#4a2a7a"
+   ],
+   "clue": {
+    "id": "clue5",
+    "name": "占卜符印",
+    "desc": "占卜師交給妳的符印，帶著它前往城南的煉金坊。",
+    "icon": "assets/icon/clue5.png"
+   },
+   "egg": {
+    "id": "egg5",
+    "img": "assets/egg/act5.png",
+    "x": 15,
+    "y": 34,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 6,
+   "role": "alchemist",
+   "unlock": "2026-12-14T19:00:00+08:00",
+   "bg": "assets/bg/act6.jpg",
+   "bgm": "assets/bgm/act6.mp3",
+   "colors": [
+    "#2e2314",
+    "#7a5a2a"
+   ],
+   "clue": {
+    "id": "clue6",
+    "name": "水晶球",
+    "desc": "能映照出被妳忽略的記憶，卻不一定是妳最想看見的畫面。",
+    "icon": "assets/icon/clue6.png"
+   },
+   "egg": {
+    "id": "egg6",
+    "img": "assets/egg/act6.png",
+    "x": 82,
+    "y": 20,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 7,
+   "role": "singer",
+   "unlock": "2026-12-15T19:00:00+08:00",
+   "bg": "assets/bg/act7.jpg",
+   "bgm": "assets/bgm/act7.mp3",
+   "colors": [
+    "#0d1530",
+    "#3a2f55"
+   ],
+   "clue": {
+    "id": "clue7",
+    "name": "星光劇場",
+    "desc": "酒吧歌聲裡指出的方向——沿著星光，走向為妳而開的劇場。",
+    "icon": "assets/icon/clue7.png"
+   },
+   "egg": {
+    "id": "egg7",
+    "img": "assets/egg/act7.png",
+    "x": 25,
+    "y": 28,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  },
+  {
+   "id": 8,
+   "role": "captain",
+   "unlock": "2026-12-16T19:00:00+08:00",
+   "bg": "assets/bg/act8.jpg",
+   "bgm": "assets/bgm/act8.mp3",
+   "colors": [
+    "#0a0f2a",
+    "#3f3f8f"
+   ],
+   "clue": {
+    "id": "clue8",
+    "name": "劇場入場券",
+    "desc": "星劇團團長交給妳的入場券，第一排的位置已經為妳準備好了。",
+    "icon": "assets/icon/clue8.png"
+   },
+   "egg": {
+    "id": "egg8",
+    "img": "assets/egg/act8.png",
+    "x": 70,
+    "y": 24,
+    "text": "找到了一個小小的爪印——羅賓來過這裡。"
+   }
+  }
+ ]
+}

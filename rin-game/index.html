@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>凜界異聞錄｜尋找失蹤的羅賓</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- 標題畫面 -->
+  <section id="title" class="screen active">
+    <div class="title-box">
+      <p class="tagline" id="tTagline"></p>
+      <h1 id="tTitle">凜界異聞錄</h1>
+      <h2 id="tSub">尋找失蹤的羅賓</h2>
+      <button id="btnStart" class="big">點擊開始</button>
+      <p class="hint">建議開啟聲音 ♪</p>
+    </div>
+  </section>
+
+  <!-- 章節選單 -->
+  <section id="menu" class="screen">
+    <header class="bar">
+      <h3>尋貓之旅</h3>
+      <div class="bar-r"><button id="btnMute" class="icon" title="聲音">♪</button></div>
+    </header>
+    <div class="counters"><span id="cClue"></span><span id="cEgg"></span></div>
+    <ul id="actList"></ul>
+    <div class="menu-foot">
+      <button id="btnCodex" class="ghost">線索圖鑑</button>
+      <button id="btnReset" class="ghost small">重置進度</button>
+    </div>
+    <p id="finaleLine" class="finale-line"></p>
+  </section>
+
+  <!-- 遊戲舞台 -->
+  <section id="stage" class="screen">
+    <div id="bg"></div>
+    <div class="topbar">
+      <button id="btnBack" class="icon" title="回選單">☰</button>
+      <span id="actName"></span>
+      <button id="btnMute2" class="icon" title="聲音">♪</button>
+    </div>
+    <div id="egg" class="egg" hidden></div>
+    <div id="chars">
+      <div class="slot left" id="slotL"></div>
+      <div class="slot right" id="slotR"></div>
+    </div>
+    <div id="dialog">
+      <div id="nameTag"></div>
+      <div id="text"></div>
+      <span id="next">▼</span>
+    </div>
+    <div id="choices" hidden></div>
+  </section>
+
+  <!-- 線索卡 -->
+  <div id="clueModal" class="modal" hidden>
+    <div class="card">
+      <p class="small">得到線索卡</p>
+      <div id="clueIcon" class="clue-icon"></div>
+      <h3 id="clueName"></h3>
+      <p id="clueDesc"></p>
+      <button id="clueOk" class="big">收下</button>
+    </div>
+  </div>
+
+  <!-- 彩蛋 -->
+  <div id="eggModal" class="modal" hidden>
+    <div class="card">
+      <p class="small">隱藏彩蛋</p>
+      <div id="eggImg" class="clue-icon"></div>
+      <p id="eggText"></p>
+      <button id="eggOk" class="big">收下</button>
+    </div>
+  </div>
+
+  <!-- 圖鑑 -->
+  <div id="codexModal" class="modal" hidden>
+    <div class="card wide">
+      <h3>線索圖鑑</h3>
+      <div id="codexGrid"></div>
+      <div id="codexBanner" hidden></div>
+      <button id="codexOk" class="big">關閉</button>
+    </div>
+  </div>
+
+  <!-- 章節結束 -->
+  <div id="endModal" class="modal" hidden>
+    <div class="card">
+      <h3 id="endTitle"></h3>
+      <p id="endText"></p>
+      <p id="endCount" class="count"></p>
+      <button id="endOk" class="big">回到選單</button>
+    </div>
+  </div>
+
+  <!-- 錯誤提示 -->
+  <div id="errorBox" class="modal" hidden>
+    <div class="card"><h3>讀取失敗</h3><p id="errText"></p></div>
+  </div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
