@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>末日之夜：火鍋夜驚魂 — 關卡版 v0.6</title>
+<meta name="description" content="世界末日也不能放下眼前的火鍋！一邊顧火鍋、一邊守住大門的像素風網頁遊戲。">
+<meta property="og:title" content="末日之夜：火鍋夜驚魂">
+<meta property="og:description" content="世界末日也不能放下眼前的火鍋！一邊顧火鍋、一邊守住大門的像素風網頁遊戲。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;background:#0d0a14;color:#f3e9d2;font-family:"DotGothic16","Noto Sans TC","PingFang TC","Microsoft JhengHei",monospace;}
+  #wrap{max-width:1100px;margin:0 auto;padding:14px;box-sizing:border-box}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+  h1{font-size:17px;letter-spacing:2px;margin:0;color:#ffcf6b}
+  .btn{background:#2a1f3d;color:#f3e9d2;border:3px solid #6b5a8a;font-family:inherit;padding:4px 10px;cursor:pointer;font-size:14px}
+  .btn:hover{background:#c0392b;border-color:#f3e9d2}
+  #hud{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;background:#140f22;border:4px solid #3a2a4a;border-bottom:none;padding:6px 12px;font-size:14px}
+  #hud b{color:#ffcf6b;font-weight:normal}
+  #wasteBox b{color:#ff9a9a}
+  .bar{display:inline-block;width:90px;height:10px;background:#000;border:2px solid #6b5a8a;vertical-align:middle;margin-left:4px}
+  .bar i{display:block;height:100%;width:100%}
+  #doorbar{background:#3fbf5a}#aromabar{background:#e8582f}
+  #stage{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:4px solid #3a2a4a;box-sizing:border-box;user-select:none;-webkit-user-select:none;overflow:hidden;touch-action:manipulation}
+  #c{width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;cursor:pointer}
+  #labels,#pops{position:absolute;inset:0;pointer-events:none}
+  .lb{position:absolute;transform:translateX(-50%);font-size:clamp(7px,1.15vw,12px);white-space:nowrap;text-shadow:1px 1px 0 #000,-1px 1px 0 #000,1px -1px 0 #000,-1px -1px 0 #000}
+  .pop{position:absolute;transform:translate(-50%,-50%);font-size:clamp(9px,1.6vw,17px);white-space:nowrap;text-shadow:2px 2px 0 #000,-1px -1px 0 #000;animation:up 1.6s ease-out forwards}
+  .pop.big{font-size:clamp(12px,2.3vw,23px)}
+  .pop.talk{animation:talk 2.2s ease-out forwards;background:#fff;color:#2a1020!important;text-shadow:none;padding:2px 8px;border:3px solid #140f1c;font-size:clamp(9px,1.5vw,15px)}
+  @keyframes up{0%{opacity:0;margin-top:6px}12%{opacity:1}100%{opacity:0;margin-top:-34px}}
+  @keyframes talk{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}
+  #bossbar{position:absolute;top:2%;left:50%;transform:translateX(-50%);width:46%;display:none;text-align:center;font-size:clamp(9px,1.5vw,15px);color:#ff9a9a;text-shadow:2px 2px 0 #000;pointer-events:none}
+  #bossbar .bb{height:10px;background:#000;border:3px solid #f3e9d2;margin-top:2px}
+  #bossbar .bb i{display:block;height:100%;background:#e74c3c}
+  .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:2%;box-sizing:border-box}
+  .ov[hidden]{display:none}
+  .panel{background:#140f22f2;border:4px solid #f3e9d2;box-shadow:0 0 0 4px #140f22;padding:10px 14px;box-sizing:border-box;max-height:100%;overflow:auto}
+  #start .panel{width:52%}
+  #end{justify-content:center;background:#0d0a14aa}
+  #end .panel{width:min(500px,82%);text-align:center}
+  .t1{font-size:clamp(10px,1.6vw,15px);color:#b6ff3b;letter-spacing:4px}
+  .t2{font-size:clamp(18px,3.4vw,34px);color:#ffcf6b;text-shadow:3px 3px 0 #c0392b;margin:0 0 6px}
+  #levelList{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px}
+  #levelList button{font-family:inherit;text-align:left;background:#22183a;color:#f3e9d2;border:3px solid #6b5a8a;padding:3px 8px;cursor:pointer;font-size:clamp(9px,1.35vw,14px)}
+  #levelList button.sel{background:#c0392b;border-color:#f3e9d2}
+  #levelList button.lock{color:#7a6e90;cursor:not-allowed}
+  #levelList button .star{color:#ffe066}
+  #levelInfo{font-size:clamp(9px,1.3vw,13px);line-height:1.5}
+  #levelInfo .sub{color:#d9c4ef;margin:2px 0 4px}
+  .story{background:#0d0a14;border:2px solid #4a3c6c;padding:4px 8px;margin:4px 0}
+  .story p{margin:1px 0}.story b{color:#ffcf6b;font-weight:normal}
+  #broths{display:flex;flex-direction:column;gap:4px;margin:5px 0}
+  #broths button,#goBtn{font-family:inherit;text-align:left;background:#22183a;color:#f3e9d2;border:3px solid #6b5a8a;padding:4px 10px;cursor:pointer;font-size:clamp(10px,1.45vw,15px)}
+  #goBtn{text-align:center;width:100%;margin-top:6px;background:#c0392b;border-color:#f3e9d2}
+  #broths button b{font-weight:normal;color:#ffcf6b;margin-right:8px}
+  #broths button span{color:#cbbbe0;font-size:.85em}
+  #broths button:hover,#broths button:focus{background:#c0392b;border-color:#f3e9d2;outline:none}
+  ul.rules{margin:2px 0;padding-left:1.1em;color:#e6dcf0}
+  ul.rules em{font-style:normal;color:#b46bff} ul.rules i{font-style:normal;color:#ffe066} ul.rules u{text-decoration:none;color:#7dff8a}
+  #unlockAll{margin-top:6px;font-size:11px;padding:2px 6px;border-width:2px;opacity:.7}
+  #endTitle{font-size:clamp(16px,3vw,28px);color:#ffcf6b;margin-bottom:8px}
+  #endStats{font-size:clamp(11px,1.6vw,15px);line-height:1.7;margin-bottom:12px}
+  #lb{margin:6px auto 10px;font-size:clamp(10px,1.4vw,14px);text-align:left;max-width:360px}
+  #lb ol{margin:4px 0;padding-left:1.6em;line-height:1.5}#lb li.me{color:#ffe066}
+  #lb input{font-family:inherit;background:#0d0a14;color:#f3e9d2;border:2px solid #6b5a8a;padding:2px 6px;width:9em}
+  .best{color:#ffe066;font-size:.9em;margin:2px 0}
+  #endBtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  footer{margin-top:10px;font-size:13px;color:#9a8fb0;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header><h1>《末日之夜：火鍋夜驚魂》關卡版 v0.6</h1><span><button class="btn" id="bgm">音樂：開</button> <button class="btn" id="mute">音效：開</button></span></header>
+  <div id="hud">
+    <span><b id="lvName">—</b></span>
+    <span>時間 <b id="time">18:00</b></span>
+    <span>大門 <i class="bar"><i id="doorbar"></i></i></span>
+    <span>香氣 <i class="bar"><i id="aromabar"></i></i></span>
+    <span>完美連擊 <b id="combo">☆☆☆☆☆</b></span>
+    <span id="friendBox" hidden>殭屍好感 <b id="friend">0/12</b></span>
+    <span id="soupBox" hidden>加湯 <b id="soup">30</b>秒</span>
+    <span id="wasteBox" hidden>浪費 <b id="waste">0/5</b></span>
+    <span>分數 <b id="score">0</b></span>
+  </div>
+  <div id="stage">
+    <canvas id="c"></canvas>
+    <div id="labels"></div>
+    <div id="pops"></div>
+    <div id="bossbar"><span id="bossName"></span><div class="bb"><i id="bossHp"></i></div></div>
+    <div id="start" class="ov"><div class="panel">
+      <div class="t1">末日之夜</div><div class="t2">火鍋夜驚魂</div>
+      <div id="levelList"></div>
+      <div id="levelInfo"></div>
+      <button class="btn" id="unlockAll">（測試用）全部解鎖</button>
+    </div></div>
+    <div id="end" class="ov" hidden><div class="panel">
+      <div id="endTitle"></div><div id="endStats"></div><div id="lb"></div>
+      <div id="endBtns"></div>
+    </div></div>
+  </div>
+  <footer>電腦用滑鼠，手機用觸控。夾著東西時按右鍵或 Esc 可以放回去。<br>關卡版 v0.6：獎勵關（中午火鍋派對）、第六夜～最終章（三種結局）、冰涼飲品、新鄰居（劍俠／奇異鳥寶寶軍團／排球隊長），第三夜起可能來第二位鄰居。破關進度存在這個瀏覽器裡。</footer>
+</div>
+<script src="music.js"></script>
+<script>
+const W=480,H=270,K='#140f1c';
+let DUR=200;
+// ===== balance config =====
+const CFG={combo:5,angelKills:8,poison:0.25,mutCil:0.3,mutFen:0.3,drainTable:1.0,drainGuard:2.4,guardBase:11,guardSat:0.12,
+  zHp:30,zHpGrow:30,riderHp:20,doorDmg:0.9,riderDmg:1.4,guardRange:440,spawnBase:7.5,spawnMin:1.9,spawnEarly:0.55,spawnGrow:1.1,
+  repair:0.8,firstSpawn:6,burnT:4,wasteMax:3,momScold:5,momWatch:25,pickyArmor:0.6,bossDmg:2.4};
+const cv=document.getElementById('c');cv.width=W;cv.height=H;
+const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
+const $=id=>document.getElementById(id);
+
+function R(c,x,y,w,h,col){c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),w,h);}
+function ell(c,cx,cy,rx,ry,col){c.fillStyle=col;cx=Math.round(cx);cy=Math.round(cy);for(let y=-ry;y<=ry;y++){const w=Math.round(rx*Math.sqrt(Math.max(0,1-(y*y)/(ry*ry))));if(w>0)c.fillRect(cx-w,cy+y,w*2,1);}}
+function ellHalf(c,cx,cy,r,col,side){c.fillStyle=col;for(let y=-r;y<=r;y++){const w=Math.round(r*Math.sqrt(Math.max(0,1-(y*y)/(r*r))));if(w>0)c.fillRect(side<0?cx-w:cx+1,cy+y,w-(side<0?1:0),1);}}
+const hc={};function hx(h){if(hc[h])return hc[h];const n=parseInt(h.slice(1),16);return hc[h]=[n>>16,(n>>8)&255,n&255];}
+function lerpC(a,b,k){k=Math.max(0,Math.min(1,k));const A=hx(a),B=hx(b);return `rgb(${A[0]+(B[0]-A[0])*k|0},${A[1]+(B[1]-A[1])*k|0},${A[2]+(B[2]-A[2])*k|0})`;}
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const pick=a=>a[Math.random()*a.length|0];
+
+// ---------- data ----------
+const BROTHS={
+  mala:{name:'麻辣鍋',speed:1.25,aroma:1.45,base:'#9c1e17',rim:'#7a1410',bub:'#ff7a45'},
+  kombu:{name:'昆布鍋',speed:1.0,aroma:1.0,base:'#d3bf86',rim:'#b9a46c',bub:'#fff4cf'},
+  suan:{name:'酸菜白肉鍋',speed:1.1,aroma:1.2,base:'#e6dfcb',rim:'#cfc6ae',bub:'#ffffff'},
+  bone:{name:'大骨湯',speed:0.8,aroma:1.0,base:'#efe6d2',rim:'#d8ccb0',bub:'#ffffff'},
+};
+const YY={L:{key:'mala',speed:1.5},R:{key:'bone',speed:0.8},aroma:1.3};
+const ING={
+  meat:{name:'肉片',cook:3,win:3,val:18,raw:'#d8455a',ok:'#c99a8c',over:'#7e5a4b',stock:10},
+  cab:{name:'高麗菜',cook:5,win:5,val:8,raw:'#a8dc7a',ok:'#6fb04f',over:'#6b7a3a',stock:10},
+  egg:{name:'蛋餃',cook:7,win:5,val:14,raw:'#f2d16b',ok:'#f0b43c',over:'#a8702a',stock:8},
+  ball:{name:'貢丸',cook:9,win:7,val:16,raw:'#e2d6bf',ok:'#d9c39a',over:'#a0825a',stock:8},
+  taro:{name:'芋頭',cook:12,win:8,val:22,raw:'#d8cfc2',ok:'#b9a2df',over:'#8a7aa0',stock:6},
+  duck:{name:'鴨血',cook:6,win:6,val:12,raw:'#7a2222',ok:'#4a1a16',over:'#2e120e',stock:5},
+  tofu:{name:'豆腐',cook:5,win:6,val:10,raw:'#f6f2e6',ok:'#ead9b0',over:'#c8b07a',stock:5},
+  enoki:{name:'金針菇',cook:3,win:4,val:7,raw:'#f6f1dc',ok:'#e2d6a8',over:'#a8986a',stock:5},
+  corn:{name:'玉米',cook:8,win:6,val:12,raw:'#f6dc5a',ok:'#f2c22a',over:'#c0901a',stock:5},
+  cil:{name:'香菜',cook:2,win:3,val:9,raw:'#6fd65a',ok:'#3e9e3a',over:'#5a6a2a',stock:6},
+  fen:{name:'茴香',cook:4,win:4,val:11,raw:'#9fd07a',ok:'#5f9f4a',over:'#5a6a3a',stock:6},
+  wagyu:{name:'A5和牛',cook:2,win:1.6,val:45,raw:'#e8506a',ok:'#d9a090',over:'#8a5a4a'},
+  crab:{name:'帝王蟹',cook:10,win:7,val:40,raw:'#b84a3a',ok:'#ff6a3a',over:'#9a3a22'},
+  mystery:{name:'神秘・黃金福丸',val:100},
+  momegg:{name:'媽媽滷蛋',val:40},
+  drink:{name:'冰涼飲品',val:25},
+};
+const MUT_NAME={taro:'毒芋',cil:'變異香菜',fen:'變異茴香'};
+const BASE=['meat','cab','egg','ball','taro'];
+const TABLE={x:190,y:160,rx:96,ry:76};
+const POT={x:190,y:156,r:40};
+const PLATE_POS=[[124,182],[150,208],[190,219],[230,208],[256,182],[110,158],[270,158]];
+const TRAY_POS={mystery:[26,244],wagyu:[50,244],crab:[74,244],momegg:[98,244],drink:[122,244]};
+const FRIDGE={x:350,y:4,w:28,h:40};
+const SLOTS=[[0,0]];for(let i=0;i<8;i++)SLOTS.push([Math.round(Math.cos(i*Math.PI/4)*20),Math.round(Math.sin(i*Math.PI/4)*19)]);
+const SLOTS_YY=[[-20,-16],[-26,1],[-19,17],[-10,1],[20,-16],[26,1],[19,17],[10,1]];
+const GUARD_SPOTS=[{x:358,y:72},{x:358,y:106},{x:358,y:140},{x:358,y:174}];
+const CHARS=[
+  {id:'taro',name:'小紫妹妹',hair:'#8e6bbf',hairL:'#b89ae3',shirt:'#d9c4ef',shirtD:'#b29bd0',style:'beret',seat:{x:118,y:80},bowl:[128,126],likes:'taro',cil:true,off:.3,base:true},
+  {id:'meat',name:'阿強哥哥',hair:'#4a2c1d',hairL:'#7a4c34',shirt:'#c0392b',shirtD:'#922a1f',style:'spiky',seat:{x:190,y:50},bowl:[190,102],likes:'meat',cil:false,off:1.7,base:true},
+  {id:'sacha',name:'夢姊姊',hair:'#221c2c',hairL:'#4a3e60',shirt:'#e67e22',shirtD:'#b8621a',style:'bun',seat:{x:262,y:80},bowl:[252,126],likes:null,cil:true,off:2.9,base:true},
+  {id:'bo',seat:{x:70,y:124},bowl:[104,135],off:4.1,base:false},
+];
+const NB={
+  bo:{name:'阿伯',kind:'person',hair:'#b8b8c0',hairL:'#e8e8f0',shirt:'#f0ede4',shirtD:'#cfcabb',style:'bald',likes:'duck',cil:false,power:1.6,hungry:1.15,
+    knockText:'叩叩叩！門外有人在喊救命……',enterText:'阿伯進來了！還帶了火鍋料！',guardLine:'看我的鍋鏟！'},
+  cat:{name:'黑貓',kind:'cat',likes:'meat',cil:true,knockText:'門外傳來細細的喵喵聲……',enterText:'黑貓溜進來了！好像很餓的樣子……'},
+  couple:{name:'對街情侶',kind:'couple',likes:null,cil:true,hair:'#3a2a1a',hairL:'#6a4a2a',shirt:'#5aa0d8',shirtD:'#3a78a8',style:'plain',hair2:'#c8884a',shirt2:'#ff9ec7',shirt2D:'#d870a0',hungry:1.2,
+    knockText:'對街的情侶在敲門：「讓我們進去啦～♥」',enterText:'情侶進來了……他們一直盯著火鍋料看'},
+  staff:{name:'火鍋店員',kind:'person',hair:'#2a2a2a',hairL:'#555',shirt:'#c0392b',shirtD:'#8a2a1f',style:'band',apron:true,likes:'ball',cil:true,power:1.0,
+    knockText:'「您好～我是巷口火鍋店的，可以讓我進去避難嗎？」',enterText:'火鍋店員進來了！「我來幫大家加湯～」',guardLine:'湯勺也是武器！'},
+  police:{name:'帥警察',kind:'person',hair:'#1a1a2a',hairL:'#3a3a5a',shirt:'#2a3f6a',shirtD:'#1a2a4a',style:'police',badge:true,likes:'meat',cil:false,power:2.4,
+    knockText:'「警察！請開門！……順便問一下，有火鍋嗎？」',enterText:'帥警察進來了！（全員眼睛一亮）',guardLine:'交給我，你們繼續吃！'},
+};
+NB.sword={name:'劍俠',kind:'person',hair:'#1a1420',hairL:'#3a3048',shirt:'#e8e4d8',shirtD:'#c8c0b0',style:'topknot',sash:true,likes:'tofu',cil:true,power:1.5,
+  knockText:'「在下隔壁修練劍術，聞香而來，可否借宿一晚？」',enterText:'劍俠進來了！「讓在下以劍術為各位夾菜。」',guardLine:'劍氣・守！'};
+NB.kiwi={name:'奇異鳥寶寶軍團',kind:'kiwi',likes:'corn',cil:true,power:1.8,hungry:2.0,eatMul:0.7,defense:0.6,
+  knockText:'門外傳來「啾啾啾」……是三隻奇異鳥寶寶！',enterText:'奇異鳥寶寶軍團進來了！（啾！）',guardLine:'啾啾啾！（列隊防守）'};
+NB.volley={name:'排球隊長',kind:'person',hair:'#3a2a1a',hairL:'#6a4a2a',shirt:'#2a7ad8',shirtD:'#1a5aa8',style:'sport',jersey:true,likes:'meat',cil:false,power:2.0,hungry:1.2,
+  knockText:'「排球隊集訓剛結束！有吃的嗎？」',enterText:'排球隊長進來了！（好壯……）',guardLine:'看我的殺球！'};
+const NB_WEIGHTS=[['cat',30],['couple',30],['staff',30],['police',10]];
+const NB_WEIGHTS_LATE=[['cat',14],['couple',14],['staff',14],['police',6],['sword',18],['kiwi',17],['volley',17]];
+const NB_DESC={bo:'阿伯：守門 ×1.6，帶火鍋料來',cat:'黑貓：吃東西加倍可愛（吃飽會呼嚕加分）',couple:'對街情侶：會偷吃……但很甜',staff:'火鍋店員：定期加湯，煮更快、更營養',police:'帥警察：沒有特別能力，但很帥',sword:'劍俠',kiwi:'奇異鳥',volley:'排球隊長'};
+function applyNeighbor(key){const c=CHARS[3];['name','kind','hair','hairL','shirt','shirtD','style','likes','cil','power','hungry','hair2','shirt2','shirt2D','knockText','enterText','guardLine','apron','badge','sash','jersey','eatMul','defense'].forEach(k=>delete c[k]);Object.assign(c,NB[key]);c.nb=key;}
+function rollNeighbor(ex){if(level.id===1)return'bo';if(level.nbFixed&&!ex)return level.nbFixed;const W=(level.id>=7?NB_WEIGHTS_LATE:NB_WEIGHTS).filter(([k])=>k!==ex);const tot=W.reduce((a,[,w])=>a+w,0);let r=Math.random()*tot;for(const[k,w]of W){if((r-=w)<0)return k;}return W[0][0];}
+function neighborLeft(){const prog=gameT/DUR;if(level.id>=3&&!level.bonus&&knock.count<2&&prog<0.75&&Math.random()<0.6){const prev=CHARS[3].nb;knock.nextAt=gameT+15;knock.state='none';knock.pending=rollNeighbor(prev);}}
+const ANGEL_CH={hair:'#ffe08a',hairL:'#fff6c8',shirt:'#ffffff',shirtD:'#dfe6f2',style:'cap',off:0};
+const MOM_CH={hair:'#3a2238',hairL:'#6a4a68',shirt:'#e86a9a',shirtD:'#b84a74',style:'perm',off:0,floral:true};
+
+// ---------- levels ----------
+const LEVELS=[
+  {id:1,name:'第一夜・寒流來襲',sub:'選一種鍋底，撐到天亮（原本的 Demo）',brothChoice:true,dur:200,fastAt:0.6,fastMul:1.06,plates:[...BASE,null,null],waves:[[0.5,5],[0.82,7]],
+    story:[['tv','插播緊急快報——感染者會陷入極度飢餓，請緊閉門窗！'],['meat','……那，先吃完再說？']],
+    tips:['點盤子下料，進度條變<u>綠色</u>就夾起來餵室友；空手點室友＝派去守門','冰箱、殭屍掉落都能拿到新食材；<i>連續 5 次完美</i>得神秘食材','芋頭可能變成<em>毒芋</em>；半夜鄰居阿伯會來敲門']},
+  {id:2,name:'第二夜・媽媽在看',sub:'新登場：媽媽、香菜',broth:'suan',dur:210,mom:true,fastAt:0.75,fastMul:1.15,spawnMul:1.1,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.5,5],[0.82,7]],
+    story:[['sacha','冰箱的菜不多了，今天要省著點吃。'],['taro','欸……媽媽剛打來，說她要過來我們這裡避難。'],['meat','完了，她最討厭別人浪費食物。']],
+    tips:['<b>浪費值</b>：丟食物沒打到東西、食材<b>煮老了才餵</b>或<b>煮到焦掉</b>、餵給<b>已經吃飽</b>或<b>不吃的人</b>都會 +1，累積到 3 <b>媽媽</b>就會出現','從這一夜開始，半夜來敲門的<b>鄰居每次都不一樣</b>：黑貓、對街情侶、火鍋店員，運氣好還會遇到<b>帥警察</b>','媽媽先罵 5 秒（全員罰站、鍋子關小火），再<b>盯場 25 秒</b>：這段時間再浪費會被沒收食材；忍住不浪費就會拿到<i>媽媽滷蛋</i>（補 40 體力、解除所有異常）','<u>香菜</u>：小紫妹妹、夢姊姊是香菜派；阿強哥哥、阿伯死都不吃','香菜煮熟時可能變成<u>變異香菜</u>：丟出去讓殭屍<b>嗆到</b>（變慢、攻擊減半）；被人吃到會<b>味覺錯亂</b>（10 秒內吃什麼都只剩 3 成飽足）']},
+  {id:3,name:'第三夜・夜市大胃王',sub:'新登場：BOSS',broth:'mala',dur:210,mom:true,fastAt:0.70,fastMul:1.15,spawnMul:1.0,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.85,6]],
+    boss:{name:'夜市大胃王',hp:1000,at:0.42},
+    story:[['tv','快報：夜市方向出現巨大感染者，正循著香味移動……'],['meat','那不是去年大胃王比賽的冠軍嗎？！'],['sacha','……他是衝著我們的麻辣鍋來的。']],
+    tips:['<b>BOSS</b> 血很厚，<i>神秘食材一次也打不倒</i>，要靠守門慢慢磨','大胃王每隔一段時間會<b>把鍋裡的食材吸走</b>來回血，鍋子空的話會叫小弟','血量剩一半會<b>暴走</b>：變快、吸得更頻繁；丟食物給他只能拖住一下下（不算浪費）','打倒大胃王有大獎勵；撐到天亮一樣算過關']},
+  {id:4,name:'第四夜・鴛鴦鍋之亂',sub:'新登場：鴛鴦鍋、茴香',pot:'yy',dur:220,mom:true,fastAt:0.65,fastMul:1.16,spawnMul:1.35,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.5,6],[0.82,8]],
+    story:[['sacha','麻辣跟大骨，我兩個都要。'],['taro','左邊滾得超快，右邊慢慢燉……這要怎麼顧啦！'],['bo','（隔壁傳來）少年仔，茴香也拿去煮啦！']],
+    tips:['<b>鴛鴦鍋</b>：左邊麻辣煮得快（×1.5），右邊大骨湯煮得慢（×0.8）','從盤子<b>夾起生料，再點鍋子的左邊或右邊</b>下鍋：快熟的放右邊比較好顧，久煮的放左邊可以省時間','<u>茴香</u>：煮熟時可能變成<u>變異茴香</u>，丟出去讓殭屍<b>迷糊倒退</b>；被人吃到會<b>想睡</b>（12 秒內餓得更快、守門力氣減半）']},
+  {id:5,name:'最終夜・挑食殭屍大遊行',sub:'新登場：挑食殭屍、最終 BOSS',pot:'yy',dur:230,mom:true,fastAt:0.60,fastMul:1.18,picky:0.15,spawnMul:0.88,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.28,5],[0.86,8]],
+    boss:{name:'吃到飽之王',hp:1200,at:0.55,pickyMinions:true},
+    story:[['tv','最後的快報：天亮前，感染者會全部湧向還有香味的地方。'],['meat','還有一種殭屍……他們居然會挑食？！'],['taro','好，那我們就用他們最討厭的東西招待他們。']],
+    tips:['<b>挑食殭屍</b>頭上會顯示牠<b>討厭的食物</b>（香菜、茴香或高麗菜）：一般攻擊對牠效果很差，但<b>丟那樣食物過去牠就會逃跑</b>','挑食殭屍不吃別的東西，丟錯食物就是浪費','最終 BOSS <b>吃到飽之王</b>：暴走時會叫一群挑食殭屍小弟','過了這一夜，還有獎勵關和更多夜晚在等你']},
+  {id:6,name:'獎勵關・中午的火鍋派對',sub:'沒有殭屍！選一位鄰居，90 秒內盡量完美上菜',bonus:true,broth:'suan',dur:90,plates:['meat','cab','egg','ball','taro','duck','corn'],waves:[],fastAt:2,fastMul:1,
+    story:[['tv','……緊急警報暫時解除。今天中午陽光很好。'],['sacha','撐過那麼多個晚上，今天中午好好吃一頓吧！'],['meat','要找誰一起來呢？']],
+    tips:['中午沒有殭屍，也沒有媽媽，大家<b>餓得特別快</b>，食材吃不完','90 秒內<u>完美上菜</u>越多次，星星越多：★ 25 次、★★ 40 次、★★★ 55 次','<b>獎勵</b>會帶到第六夜之後的每一夜，開局就能拿到：★ 神秘食材 ×1；★★ 再加 A5和牛 ×1；★★★ 再加媽媽滷蛋 ×1（以最高紀錄為準）']},
+  {id:7,name:'第六夜・熱帶夜',sub:'新登場：冰涼飲品、劍俠',broth:'kombu',dur:220,mom:true,drinks:true,nbFixed:'sword',spawnMul:1.35,fastAt:0.58,fastMul:1.18,plates:['meat','cab','egg','ball','taro','cil',null],waves:[[0.4,6],[0.8,8]],
+    story:[['sacha','好熱……都晚上了還這麼熱。'],['taro','冰箱裡好像有冰的飲料！'],['tv','快報：高溫讓感染者更加躁動……']],
+    tips:['從這一夜開始，<b>冰箱</b>有機率翻到<u>冰涼飲品</u>（珍奶／冬瓜茶／青草茶）：<b>不用煮</b>，直接喝補 25 體力；丟向殭屍可以讓牠們<b>緩速</b>','新鄰居 <b>劍俠</b>：在桌邊時會定期用劍術把鍋裡<b>剛好熟的食材</b>自動夾給大家；把<i>神秘食材</i>給劍俠吃，會讓<b>座位上所有人</b>體力全滿','第三夜起，如果鄰居很快就離開（黑貓、情侶、沒開門），還可能有<b>第二位鄰居</b>來敲門']},
+  {id:8,name:'第七夜・奇異鳥來敲門',sub:'新登場：奇異鳥寶寶軍團',broth:'suan',dur:220,mom:true,drinks:true,nbFixed:'kiwi',picky:0.12,spawnMul:1.4,fastAt:0.56,fastMul:1.18,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.45,7],[0.82,9]],
+    story:[['meat','門外有……「啾啾」的聲音？'],['taro','三隻毛茸茸的奇異鳥寶寶！好可愛！'],['sacha','……但牠們好像比阿強哥哥還會吃。']],
+    tips:['新鄰居 <b>奇異鳥寶寶軍團</b>（3 隻）：守門時<b>大門受到的傷害 −40%</b>、攻擊力也很高，但<b>超級會餓</b>，吃東西的飽足只有 7 成','挑食殭屍會零星出現，記得留著香菜、茴香、高麗菜']},
+  {id:9,name:'第八夜・大胃王再臨',sub:'新登場：排球隊長；BOSS 回歸',pot:'yy',dur:230,mom:true,drinks:true,nbFixed:'volley',spawnMul:1.25,fastAt:0.54,fastMul:1.2,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.85,8]],
+    boss:{name:'夜市大胃王・再臨',hp:1500,at:0.35},
+    story:[['tv','快報：上次的大胃王……又出現了，而且更大隻。'],['meat','他是不是在外面也吃了一整晚？'],['bo','（門外）喂～有人在嗎？排球隊集訓剛結束！']],
+    tips:['新鄰居 <b>排球隊長</b>：守門攻擊力很高，還有機率發動<b>殺球</b>（範圍傷害，但不一定能一擊打倒）','BOSS 血量更厚，記得用變異食材和冰飲拖住他']},
+  {id:10,name:'第九夜・颱風夜',sub:'挑食殭屍＋吃到飽之王，一起來',pot:'yy',dur:240,mom:true,drinks:true,picky:0.15,spawnMul:0.92,fastAt:0.52,fastMul:1.2,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.3,6],[0.88,9]],
+    boss:{name:'吃到飽之王・颱風版',hp:1500,at:0.5,pickyMinions:true},
+    story:[['tv','颱風來襲……也許，這是最後一個晚上了。'],['sacha','颱風天就是要吃火鍋。'],['taro','……殭屍也是這樣想的吧。']],
+    tips:['鄰居會從所有人裡隨機出現（劍俠、奇異鳥、排球隊長也會來）','這是結局前的最後一夜，善用獎勵關的開局獎勵']},
+  {id:11,name:'最終章・天亮之後',sub:'結局關：你怎麼對待殭屍，決定結局',pot:'yy',dur:250,mom:true,drinks:true,picky:0.15,ending:true,friend:12,spawnMul:0.88,fastAt:0.5,fastMul:1.22,plates:['meat','cab','egg','ball','taro','cil','fen'],waves:[[0.35,6],[0.9,8]],
+    boss:{name:'飢餓之源',hp:1800,at:0.6,pickyMinions:true},
+    story:[['tv','……訊號……很弱……感染的源頭……正往你們的方向……'],['meat','不管發生什麼事，鍋子都不能熄火。'],['taro','欸……你們有沒有覺得，殭屍其實只是肚子餓而已？']],
+    tips:['<b>三種結局</b>：大門被攻破 → <b>BE</b>；撐到天亮 → <b>HE</b>（依「殭屍好感」分成兩種）','這一夜<b>丟食物給殭屍吃</b>（被牠們停下來吃掉）不算浪費，還會累積<b>殭屍好感</b>；天亮時好感達到 12，會進入另一個結局','最終 BOSS <b>飢餓之源</b>：血量最厚，暴走時會叫一群挑食殭屍']},
+];
+
+// ---------- state ----------
+let level=LEVELS[0],potMode='single',state='menu',broth=BROTHS.mala,brothKey='mala',gameT=0,doorHP=100,score=0,spawnT=4,flashT=0;
+let waveIdx=0,waveLeft=0,waveT=0;
+let pot=[],zombies=[],parts=[],steam=[],proj=[],held=null,stock={},plates=[],tray={},combo=0,killsSinceAngel=0,angel=null,fridgeCD=0,fridgeOpen=0,knock=null;
+let balls=[],friendship=0,bonusStars=0,endingType=null,chosenNb='staff',fastSaid=false,soupBuff=0,coupleOut=null,slashT=0,wasteN=0,mom=null,boss=null,bossDone=false,steals=[];
+let stats;let mx=-99,my=-99;
+const isDay=()=>level.bonus||(state==='ending'&&endingType!=='be');
+let progress=0,allUnlocked=false;try{progress=+localStorage.getItem('hotpot_progress')||0;}catch(e){}
+function lbLoad(){try{return JSON.parse(localStorage.getItem('hotpot_lb')||'{}');}catch(e){return{};}}
+function lbSave(d){try{localStorage.setItem('hotpot_lb',JSON.stringify(d));}catch(e){}}
+function getName(){try{return localStorage.getItem('hotpot_name')||'無名火鍋客';}catch(e){return'無名火鍋客';}}
+function setName(n){try{localStorage.setItem('hotpot_name',n);}catch(e){}}
+let lastEntry=null;
+function loadBonus(){try{return +localStorage.getItem('hotpot_bonus')||0;}catch(e){return 0;}}
+function saveBonus(n){if(n>loadBonus()){try{localStorage.setItem('hotpot_bonus',String(n));}catch(e){}}}
+function loadEndings(){try{return JSON.parse(localStorage.getItem('hotpot_endings')||'[]');}catch(e){return[];}}
+function saveEnding(k){const a=loadEndings();if(!a.includes(k)){a.push(k);try{localStorage.setItem('hotpot_endings',JSON.stringify(a));}catch(e){}}}
+function lbAdd(lv,entry){const d=lbLoad();const a=d[lv]||[];a.push(entry);a.sort((x,y)=>y.s-x.s);d[lv]=a.slice(0,10);lbSave(d);return d[lv];}
+function lbRename(lv,id,name){const d=lbLoad();(d[lv]||[]).forEach(e=>{if(e.id===id)e.n=name;});lbSave(d);}
+function renderLB(lv){
+  const a=(lbLoad()[lv]||[]),el=$('lb');
+  const rank=lastEntry?a.findIndex(e=>e.id===lastEntry.id):-1;
+  el.innerHTML=`<div>本機排行榜（${LEVELS[lv-1].name}）${rank>=0?`｜你的成績排第 <b>${rank+1}</b> 名`:'｜這次沒擠進前 10 名'}</div>`+
+    `<div>名字：<input id="lbName" maxlength="12" value="${getName().replace(/"/g,'&quot;')}"></div>`+
+    `<ol>${a.map(e=>`<li class="${lastEntry&&e.id===lastEntry.id?'me':''}">${e.n.replace(/</g,'&lt;')}　${e.s} 分${e.w?' ☀':''}</li>`).join('')||'<li>還沒有紀錄</li>'}</ol>`;
+  $('lbName').onchange=e=>{const n=(e.target.value||'').trim().slice(0,12)||'無名火鍋客';setName(n);if(lastEntry){lbRename(lv,lastEntry.id,n);}renderLB(lv);};
+}
+function saveProgress(n){if(n>progress){progress=n;try{localStorage.setItem('hotpot_progress',String(n));}catch(e){}}}
+
+function reset(){
+  pot=[];zombies=[];parts=[];proj=[];steals=[];held=null;gameT=0;doorHP=100;score=0;spawnT=CFG.firstSpawn;flashT=0;waveIdx=0;waveLeft=0;waveT=0;
+  DUR=level.dur;potMode=level.pot==='yy'?'yy':'single';
+  if(!level.brothChoice&&level.broth){brothKey=level.broth;broth=BROTHS[brothKey];}
+  plates=level.plates.slice();stock={};const sm=level.id>=7?1.5:level.id>=4?1.3:1;plates.forEach(k=>{if(k)stock[k]=Math.round(ING[k].stock*sm);});
+  tray={mystery:0,wagyu:0,crab:0,momegg:0};combo=0;killsSinceAngel=0;angel=null;fridgeCD=6;fridgeOpen=0;knock={state:'none',t:0,count:0,nextAt:0,pending:null};
+  wasteN=0;mom=null;boss=null;bossDone=false;
+  CHARS.forEach(c=>{c.active=c.base;c.sat=70;c.guard=false;c.spot=-1;c.stun=0;c.mood=null;c.moodT=0;c.debuff=null;});
+  applyNeighbor(level.bonus?chosenNb:rollNeighbor());fastSaid=false;soupBuff=0;coupleOut=null;slashT=0;balls=[];friendship=0;endingType=null;
+  if(level.bonus){plates.forEach(k=>{if(k)stock[k]=99;});tray.wagyu=3;tray.crab=2;const c=CHARS[3];c.active=true;c.sat=60;c.swordT=8;c.soupT=1;knock.state='done';stats.nb=c.name;}
+  if(level.id>=7){bonusStars=loadBonus();if(bonusStars>=1)tray.mystery+=1;if(bonusStars>=2)tray.wagyu+=1;if(bonusStars>=3)tray.momegg+=1;}
+  stats={perfect:0,kills:0,poisonHit:0,poisonEat:0,angel:0,mystery:0,newIng:0,bestCombo:0,waste:0,mom:0,momegg:0,boss:false,picky:0,mutHit:0};
+}
+const active=()=>CHARS.filter(c=>c.active);
+
+function makeDecor(key){
+  const r=rng(key.length*977+13+key.charCodeAt(0)),items=[];
+  const P=(n,type,rmin,rmax)=>{for(let i=0;i<n;i++){items.push({type,a:r()*Math.PI*2,d:rmin+r()*(rmax-rmin),ph:r()*6,rot:r()});}};
+  if(key==='mala'){P(7,'oil',4,26);P(6,'chili',8,29);P(10,'pepper',3,30);P(3,'garlic',8,28);}
+  if(key==='kombu'){P(8,'ripple',4,26);P(5,'kelp',8,26);P(10,'onion',5,30);P(2,'mush',10,24);}
+  if(key==='suan'){P(8,'fat',4,28);P(12,'cabbage',4,29);P(6,'pork',8,27);}
+  if(key==='bone'){P(6,'fat',4,28);P(5,'bonepc',8,26);P(8,'goji',4,29);P(8,'onion',5,29);}
+  return items;
+}
+const brothDecor={};for(const k in BROTHS)brothDecor[k]=makeDecor(k);
+
+// ---------- audio ----------
+let ac=null,muted=false;
+function AC(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}return ac;}
+function tone(type,f1,f2,dur,vol,delay){const a=AC();if(!a||muted)return;try{const o=a.createOscillator(),v=a.createGain(),n=a.currentTime+(delay||0);o.type=type;o.frequency.setValueAtTime(f1,n);o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),n+dur);v.gain.setValueAtTime(vol,n);v.gain.exponentialRampToValueAtTime(0.0001,n+dur);o.connect(v);v.connect(a.destination);o.start(n);o.stop(n+dur+0.02);}catch(e){}}
+const sfx={
+  plop:()=>tone('sine',520,180,0.12,0.25),pick:()=>tone('square',660,880,0.06,0.05),
+  eat:()=>{tone('square',300,200,0.05,0.06);tone('square',320,210,0.05,0.06,0.09);},
+  good:()=>{tone('square',660,660,0.07,0.05);tone('square',990,990,0.1,0.05,0.08);},
+  bad:()=>tone('square',300,150,0.18,0.05),
+  poison:()=>{tone('sawtooth',200,60,0.5,0.08);tone('sine',90,300,0.5,0.1);},
+  thud:()=>tone('sine',110,40,0.18,0.35),hit:()=>tone('square',220,90,0.06,0.05),
+  throwS:()=>tone('triangle',300,900,0.25,0.08),splash:()=>tone('sawtooth',400,80,0.35,0.06),
+  fridge:()=>{tone('sine',300,600,0.15,0.12);tone('square',880,880,0.08,0.04,0.15);},
+  chime:()=>[784,988,1175,1568].forEach((f,i)=>tone('triangle',f,f,0.25,0.07,i*0.09)),
+  combo:()=>[523,659,784,1047].forEach((f,i)=>tone('square',f,f,0.12,0.05,i*0.07)),
+  boom:()=>{tone('sawtooth',800,60,0.6,0.1);tone('triangle',1200,1600,0.4,0.06);},
+  scold:()=>[0,0.22,0.44].forEach(d=>tone('square',520,380,0.16,0.07,d)),
+  roar:()=>{tone('sawtooth',90,40,0.9,0.14);tone('square',60,30,0.9,0.08);},
+  slurp:()=>tone('sine',200,900,0.4,0.12),
+  yuck:()=>{tone('square',500,250,0.25,0.06);},
+};
+$('mute').onclick=e=>{muted=!muted;e.target.textContent='音效：'+(muted?'關':'開');};
+$('bgm').onclick=e=>{const on=music.toggle();if(on&&!music.current)music.play(state==='play'?'battle':'title',AC());e.target.textContent='音樂：'+(on?'開':'關');};
+document.addEventListener('pointerdown',()=>{if(state==='menu'&&!music.current&&music.enabled)music.play('title',AC());});
+
+// ---------- DOM helpers ----------
+const labelsEl=$('labels'),popsEl=$('pops');
+function pop(x,y,text,col,big){const d=document.createElement('div');d.className='pop'+(big?' big':'');d.textContent=text;d.style.color=col||'#fff';d.style.left=(x/W*100)+'%';d.style.top=(y/H*100)+'%';popsEl.appendChild(d);setTimeout(()=>d.remove(),1600);}
+function talk(x,y,text){const d=document.createElement('div');d.className='pop talk';d.textContent=text;d.style.left=(x/W*100)+'%';d.style.top=(y/H*100)+'%';popsEl.appendChild(d);setTimeout(()=>d.remove(),2200);}
+function mkLabel(x,y,col){const d=document.createElement('div');d.className='lb';d.style.left=(x/W*100)+'%';d.style.top=(y/H*100)+'%';if(col)d.style.color=col;labelsEl.appendChild(d);return d;}
+const plateLbl=PLATE_POS.map(([x,y])=>mkLabel(x,y+7));
+const charLbl=CHARS.map(()=>mkLabel(0,0,'#ffe9b0'));
+const trayLbl={};for(const k in TRAY_POS)trayLbl[k]=mkLabel(TRAY_POS[k][0],TRAY_POS[k][1]+8,'#ffe066');
+const trayTitle=mkLabel(70,213,'#ffcf6b');trayTitle.textContent='特別食材';
+const fridgeLbl=mkLabel(FRIDGE.x+14,FRIDGE.y+41,'#bfe6ff');
+const momLbl=mkLabel(0,0,'#ffb0d0');
+
+// ---------- helpers ----------
+const slots=()=>potMode==='yy'?SLOTS_YY:SLOTS;
+const sideOf=i=>slots()[i][0]<0?'L':'R';
+function sachaActive(){const s=CHARS[2];return !s.guard&&s.stun<=0;}
+function winOf(o){return ING[o.type].win*(sachaActive()?1.4:1);}
+const SPECIAL=k=>k==='mystery'||k==='momegg'||k==='drink';
+function stOf(o){if(SPECIAL(o.type))return'special';if(o.mut)return'mut';if(o.t<o.cook)return'raw';if(o.t<o.cook+winOf(o))return'ok';return'over';}
+function ingColor(o){const d=ING[o.type],s=stOf(o);if(s==='raw')return lerpC(d.raw,d.ok,o.t/o.cook*0.7);if(s==='ok')return d.ok;if(s==='over')return lerpC(d.ok,d.over,(o.t-o.cook-winOf(o))/4);return null;}
+function speedOf(o){return (potMode==='yy'?YY[sideOf(o.slot)].speed:broth.speed)*(soupBuff>0?1.3:1);}
+function aroma(){return (potMode==='yy'?YY.aroma:broth.aroma)*(1+0.12*pot.length);}
+function freeSlot(side){const used=new Set(pot.map(o=>o.slot));const f=[];slots().forEach((s,i)=>{if(!used.has(i)&&(!side||sideOf(i)===side))f.push(i);});return f.length?pick(f):-1;}
+function slotPos(o,t){const s=slots()[o.slot];return[POT.x+s[0],POT.y+s[1]+Math.sin(t/400+o.slot)*0.6];}
+function charPos(c){return c.guard?GUARD_SPOTS[c.spot]:c.seat;}
+function burst(x,y,n,col,spd){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=(spd||20)*(0.4+Math.random());parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:0.6+Math.random()*0.5,col,sz:Math.random()<0.4?2:1});}}
+const scolding=()=>mom&&mom.phase==='scold';
+function newItem(k,src){return{type:k,slot:-1,t:0,cook:ING[k].cook,mut:false,rolled:false,src};}
+function placeInPot(o,side){
+  const s=freeSlot(side);if(s<0){pop(POT.x,POT.y-46,side?(side==='L'?'左邊滿了！':'右邊滿了！'):'鍋子滿了！','#ff9a9a');sfx.bad();return false;}
+  o.slot=s;o.src='pot';pot.push(o);const[p,q]=slotPos(o,performance.now());burst(p,q,5,'#fff4cf',18);sfx.plop();return true;
+}
+function giveIngredient(x,y,prefix,newChance){
+  const pool=['meat','cab','egg','ball','taro','duck','tofu','enoki','corn'].concat(level.plates.filter(k=>k==='cil'||k==='fen'));
+  const onTable=plates.filter(k=>k&&stock[k]>0);
+  const emptyIdx=plates.findIndex(k=>!k||stock[k]<=0);
+  const notOn=pool.filter(k=>!onTable.includes(k));
+  if(emptyIdx>=0&&notOn.length&&Math.random()<newChance){
+    const fresh=notOn.filter(k=>!BASE.includes(k));const k=fresh.length&&Math.random()<0.75?pick(fresh):pick(notOn);
+    plates[emptyIdx]=k;stock[k]=(stock[k]||0)+(BASE.includes(k)?4:5);stats.newIng++;
+    const[px,py]=PLATE_POS[emptyIdx];burst(px,py,16,'#9fffb0',26);pop(x,y,`${prefix}新食材：${ING[k].name}！`,'#9fffb0',true);
+  }else if(onTable.length){const k=pick(onTable);stock[k]+=3;pop(x,y,`${prefix}${ING[k].name} +3`,'#ffe9b0');}
+}
+function openFridge(){
+  if(fridgeCD>0){pop(FRIDGE.x+14,FRIDGE.y+52,`還要 ${Math.ceil(fridgeCD)} 秒`,'#bfe6ff');sfx.bad();return;}
+  fridgeCD=level.id>=7?14:18;fridgeOpen=0.8;sfx.fridge();burst(FRIDGE.x+14,FRIDGE.y+24,14,'#d8f2ff',24);
+  if(level.drinks&&Math.random()<0.4){tray.drink+=2;burst(TRAY_POS.drink[0],TRAY_POS.drink[1],18,'#bfe6ff',24);pop(FRIDGE.x-10,FRIDGE.y+58,'冰箱翻到：'+pick(['珍珠奶茶','冬瓜茶','青草茶'])+' ×2！','#bfe6ff',true);return;}
+  giveIngredient(FRIDGE.x-6,FRIDGE.y+58,'冰箱翻到：',0.7);
+}
+
+// ---------- waste & mom ----------
+const MOM_LINES=['你們知道一顆高麗菜現在多少錢嗎！','外面都是殭屍了還在浪費！','以前我們連湯都要喝完！','夾了就要吃完，聽到沒有！','煮焦了是要給誰吃？給殭屍喔？'];
+function addWaste(x,y,why){
+  stats.waste++;
+  if(!level.mom){if(why)pop(x,y,why,'#d9b38c');return;}
+  if(mom&&mom.phase==='watch'){
+    const cands=plates.filter(k=>k&&stock[k]>0);
+    if(cands.length){const k=pick(cands),n=Math.min(3,stock[k]);stock[k]-=n;pop(mom.x+40,mom.y-14,`媽媽：沒收！${ING[k].name} -${n}`,'#ff9ad0',true);}
+    talk(mom.x+20,mom.y-26,'我剛剛說什麼？！');mom.t=CFG.momWatch;sfx.scold();return;
+  }
+  if(mom)return;
+  wasteN++;pop(x,y,(why?why+' ':'')+`浪費 ${wasteN}/${CFG.wasteMax}`,'#ff9a9a');
+  if(wasteN>=CFG.wasteMax)summonMom();
+}
+function summonMom(){mom={phase:'enter',x:-24,y:174,t:0,line:0};wasteN=0;stats.mom++;pop(160,120,'……玄關傳來腳步聲','#ffb0d0',true);}
+function updateMom(dt){
+  if(!mom)return;mom.t-=dt;
+  if(mom.phase==='enter'){mom.x+=70*dt;if(mom.x>=36){mom.x=36;mom.phase='scold';mom.t=CFG.momScold;mom.lt=0;sfx.scold();
+      active().forEach(c=>{if(!c.guard){c.mood='shock';c.moodT=CFG.momScold;}});pop(190,110,'媽媽：你們在浪費什麼！！','#ff6aa8',true);}}
+  else if(mom.phase==='scold'){mom.lt-=dt;if(mom.lt<=0){talk(mom.x+24,mom.y-26,MOM_LINES[mom.line++%MOM_LINES.length]);mom.lt=1.7;}
+    if(mom.t<=0){mom.phase='watch';mom.t=CFG.momWatch;talk(mom.x+24,mom.y-26,'接下來我會在這裡盯著。');}}
+  else if(mom.phase==='watch'){if(mom.t<=0){mom.phase='leave';tray.momegg+=2;sfx.chime();burst(TRAY_POS.momegg[0],TRAY_POS.momegg[1],24,'#ffd38a',30);
+      talk(mom.x+24,mom.y-26,'這樣才對嘛～滷蛋拿去吃！');pop(200,120,'獲得：媽媽滷蛋 ×2','#ffd38a',true);}}
+  else if(mom.phase==='leave'){mom.x-=60*dt;if(mom.x<-30)mom=null;}
+}
+
+// ---------- characters ----------
+function drawChar(c,cx,y,ch,mood,t){
+  const SK=ch.skin||'#f6cfa6',SKD=ch.skinD||'#dcaa80',E=ch.eye||'#1a1020';
+  const face=mood==='stun'?'#c9b6e6':SK;
+  R(c,cx-12,y+16,24,21,K);R(c,cx-11,y+17,22,20,ch.shirt);R(c,cx-11,y+31,22,6,ch.shirtD);R(c,cx-4,y+17,8,2,ch.shirtD);
+  if(ch.floral){[[-8,20],[4,22],[-3,26],[6,29],[-9,30],[1,33]].forEach(([dx,dy])=>{R(c,cx+dx,y+dy,2,2,'#ffe066');R(c,cx+dx+1,y+dy+1,1,1,'#fff');});}
+  R(c,cx-3,y+16,6,2,SKD);
+  if(ch.style==='bald'){R(c,cx-15,y+19,5,15,K);R(c,cx+10,y+19,5,15,K);R(c,cx-14,y+20,3,13,SK);R(c,cx+11,y+20,3,13,SK);R(c,cx-11,y+17,4,3,SK);R(c,cx+7,y+17,4,3,SK);}
+  else{R(c,cx-15,y+19,5,15,K);R(c,cx+10,y+19,5,15,K);R(c,cx-14,y+20,3,12,ch.shirt);R(c,cx+11,y+20,3,12,ch.shirt);R(c,cx-14,y+32,3,2,SK);R(c,cx+11,y+32,3,2,SK);}
+  if(ch.style==='bun'||ch.style==='long'){R(c,cx-11,y+2,22,20,K);R(c,cx-10,y+3,20,18,ch.hair);}
+  if(ch.apron){R(c,cx-7,y+20,14,17,'#f3efe6');R(c,cx-7,y+20,14,1,'#d8d0c0');R(c,cx-2,y+24,4,3,'#c0392b');}
+  if(ch.badge){R(c,cx-8,y+20,3,3,'#ffe066');R(c,cx-7,y+21,1,1,'#fff');R(c,cx+3,y+19,6,1,'#ffe066');}
+  R(c,cx-10,y+1,20,16,K);R(c,cx-9,y,18,1,K);R(c,cx-8,y+17,16,1,K);
+  R(c,cx-8,y+6,16,11,face);
+  if(ch.style==='bald'){
+    R(c,cx-9,y+1,18,6,face);R(c,cx-5,y+2,4,1,'#fff3e0');R(c,cx-9,y+5,3,7,ch.hair);R(c,cx+6,y+5,3,7,ch.hair);
+    R(c,cx-7,y+7,4,1,ch.hair);R(c,cx+3,y+7,4,1,ch.hair);R(c,cx-3,y+13,6,1,ch.hair);
+  }else{
+    R(c,cx-9,y+1,18,6,ch.hair);R(c,cx-9,y+6,3,8,ch.hair);R(c,cx+6,y+6,3,8,ch.hair);
+    R(c,cx-6,y+6,4,2,ch.hair);R(c,cx-1,y+6,3,3,ch.hair);R(c,cx+3,y+6,2,2,ch.hair);
+    R(c,cx-6,y+2,5,1,ch.hairL);R(c,cx+1,y+3,3,1,ch.hairL);
+  }
+  if(ch.style==='perm'){for(let i=0;i<6;i++){R(c,cx-12+i*4,y-3+(i%2),5,5,K);R(c,cx-11+i*4,y-2+(i%2),3,3,ch.hair);R(c,cx-11+i*4,y-2+(i%2),1,1,ch.hairL);}R(c,cx-12,y+3,4,9,K);R(c,cx-11,y+4,2,7,ch.hair);R(c,cx+8,y+3,4,9,K);R(c,cx+9,y+4,2,7,ch.hair);}
+  if(ch.style==='spiky'){R(c,cx-8,y-3,4,4,K);R(c,cx-7,y-2,2,3,ch.hair);R(c,cx-2,y-4,4,5,K);R(c,cx-1,y-3,2,4,ch.hair);R(c,cx+4,y-3,4,4,K);R(c,cx+5,y-2,2,3,ch.hair);}
+  if(ch.style==='bun'){R(c,cx-4,y-6,8,7,K);R(c,cx-3,y-5,6,5,ch.hair);R(c,cx-2,y-5,2,1,ch.hairL);R(c,cx+2,y-2,5,1,'#e0b84a');}
+  if(ch.style==='beret'){R(c,cx-12,y-3,20,5,K);R(c,cx-11,y-2,18,3,'#6a4c9c');R(c,cx-9,y-2,6,1,'#8f70c4');R(c,cx-1,y-5,2,2,K);}
+  if(ch.sash){R(c,cx-11,y+22,22,3,'#3a6a5a');R(c,cx-11,y+23,22,1,'#5a9a8a');}
+  if(ch.jersey){R(c,cx-2,y+21,4,1,'#fff');R(c,cx+1,y+22,1,4,'#fff');R(c,cx-11,y+17,3,4,'#fff');R(c,cx+8,y+17,3,4,'#fff');}
+  if(ch.style==='topknot'){R(c,cx-3,y-6,6,6,K);R(c,cx-2,y-5,4,4,ch.hair);R(c,cx-4,y-2,8,2,K);R(c,cx-3,y-2,6,1,'#c0392b');R(c,cx+4,y-2,4,1,'#c0392b');R(c,cx+6,y-1,1,4,'#c0392b');}
+  if(ch.style==='sport'){R(c,cx-10,y+2,20,3,K);R(c,cx-9,y+3,18,1,'#ffe066');}
+  if(ch.style==='band'){R(c,cx-10,y+2,20,4,K);R(c,cx-9,y+3,18,2,'#f3efe6');R(c,cx-3,y+3,6,1,'#c0392b');R(c,cx+8,y+3,4,5,K);R(c,cx+9,y+4,2,3,'#f3efe6');}
+  if(ch.style==='police'){R(c,cx-11,y-4,22,7,K);R(c,cx-10,y-3,20,4,'#1a2a4a');R(c,cx-1,y-3,2,2,'#ffe066');R(c,cx-12,y+2,24,2,K);R(c,cx-11,y+2,22,1,'#0e1830');if(((t/300)|0)%5===0){R(c,cx+12,y+4,1,3,'#fff');R(c,cx+11,y+5,3,1,'#fff');}}
+  if(ch.style==='cap'){R(c,cx-10,y-3,20,6,K);R(c,cx-9,y-2,18,4,'#ff9ec7');R(c,cx-7,y-2,5,1,'#ffd0e4');R(c,cx-13,y+2,8,2,K);R(c,cx-12,y+2,6,1,'#ff7ab0');}
+  const blink=((t/1000+ch.off)%3.7)<0.12;
+  if(mood==='stun'){
+    [[cx-6,y+9],[cx+3,y+9]].forEach(([x,yy])=>{R(c,x,yy,1,1,E);R(c,x+2,yy,1,1,E);R(c,x+1,yy+1,1,1,E);R(c,x,yy+2,1,1,E);R(c,x+2,yy+2,1,1,E);});
+    R(c,cx-2,y+14,1,1,'#6a3a8a');R(c,cx-1,y+13,1,1,'#6a3a8a');R(c,cx,y+14,1,1,'#6a3a8a');R(c,cx+1,y+13,1,1,'#6a3a8a');
+    for(let i=0;i<3;i++){const a=t/300+i*2.1;R(c,cx+Math.cos(a)*11,y-6+Math.sin(a)*3,2,2,i%2?'#b46bff':'#ffe066');}
+  }else if(mood==='shock'){
+    R(c,cx-6,y+8,4,4,'#fff');R(c,cx+2,y+8,4,4,'#fff');R(c,cx-5,y+9,2,2,E);R(c,cx+3,y+9,2,2,E);R(c,cx-1,y+13,3,2,E);
+    R(c,cx+9,y+2,1,3,'#9fd3ff');R(c,cx+9,y+6,1,1,'#9fd3ff');
+  }else if(mood==='happy'||mood==='power'){
+    R(c,cx-6,y+10,1,1,E);R(c,cx-5,y+9,2,1,E);R(c,cx-3,y+10,1,1,E);R(c,cx+2,y+10,1,1,E);R(c,cx+3,y+9,2,1,E);R(c,cx+5,y+10,1,1,E);
+    const chew=((t/120)|0)%2;R(c,cx-2,y+13,4,chew?2:1,'#7a2030');
+    if(mood==='power')for(let i=0;i<4;i++){const a=t/200+i*1.57;R(c,cx+Math.cos(a)*14,y+16+Math.sin(a)*12,2,2,'#ffe066');}
+  }else if(mood==='hungry'||mood==='sleepy'){
+    R(c,cx-6,y+10,3,1,E);R(c,cx+3,y+10,3,1,E);R(c,cx-6,y+9,3,1,'rgba(0,0,0,.25)');R(c,cx+3,y+9,3,1,'rgba(0,0,0,.25)');
+    R(c,cx-1,y+13,2,1,'#7a2030');if(mood==='hungry')R(c,cx+1,y+14,1,2,'#9fd3ff');
+  }else if(mood==='angry'){
+    R(c,cx-6,y+8,3,1,E);R(c,cx+3,y+8,3,1,E);R(c,cx-6,y+10,3,2,E);R(c,cx+3,y+10,3,2,E);R(c,cx-2,y+13,4,1,E);
+    R(c,cx+7,y,3,1,'#e74c3c');R(c,cx+8,y-1,1,3,'#e74c3c');
+  }else if(mood==='yuck'){
+    R(c,cx-6,y+9,3,1,E);R(c,cx-5,y+10,2,1,E);R(c,cx+3,y+9,3,1,E);R(c,cx+3,y+10,2,1,E);R(c,cx-2,y+13,4,1,'#3e9e3a');R(c,cx-1,y+14,2,1,'#3e9e3a');
+  }else{
+    if(blink){R(c,cx-6,y+11,3,1,E);R(c,cx+3,y+11,3,1,E);}
+    else{R(c,cx-6,y+9,3,3,E);R(c,cx+3,y+9,3,3,E);R(c,cx-6,y+9,1,1,'#fff');R(c,cx+3,y+9,1,1,'#fff');}
+    R(c,cx-1,y+13,2,1,'#a0403a');
+  }
+  if(mood!=='stun'&&ch.style!=='bald'&&!ch.skin){R(c,cx-7,y+12,2,1,'#f39a9a');R(c,cx+5,y+12,2,1,'#f39a9a');}
+}
+function drawCat(cx,y,t,mood){
+  y+=10;const B='#2a2436',L='#4a4060';const sw=Math.round(Math.sin(t/300)*3);
+  R(g,cx+7,y+18,4,9,K);R(g,cx+8,y+18,2,8,B);R(g,cx+9+sw,y+11,4,8,K);R(g,cx+10+sw,y+12,2,6,B);
+  ell(g,cx,y+20,10,8,K);ell(g,cx,y+20,9,7,B);R(g,cx-5,y+16,3,2,L);
+  R(g,cx-6,y+26,5,3,K);R(g,cx+1,y+26,5,3,K);R(g,cx-5,y+26,3,2,B);R(g,cx+2,y+26,3,2,B);
+  ell(g,cx,y+8,9,7,K);ell(g,cx,y+8,8,6,B);
+  R(g,cx-8,y-2,5,5,K);R(g,cx-7,y-1,3,3,B);R(g,cx+3,y-2,5,5,K);R(g,cx+4,y-1,3,3,B);R(g,cx-6,y,1,1,'#c86a8a');R(g,cx+5,y,1,1,'#c86a8a');
+  if(mood==='happy'){R(g,cx-5,y+7,3,1,'#ffe066');R(g,cx+2,y+7,3,1,'#ffe066');}
+  else if(((t/1000+1.3)%4)<0.12){R(g,cx-5,y+8,3,1,'#ffe066');R(g,cx+2,y+8,3,1,'#ffe066');}
+  else{R(g,cx-5,y+6,3,3,'#ffe066');R(g,cx+2,y+6,3,3,'#ffe066');R(g,cx-4,y+6,1,3,K);R(g,cx+3,y+6,1,3,K);}
+  R(g,cx-1,y+10,2,1,'#c86a8a');R(g,cx-11,y+9,5,1,'#8a8098');R(g,cx+6,y+9,5,1,'#8a8098');R(g,cx-11,y+11,5,1,'#8a8098');R(g,cx+6,y+11,5,1,'#8a8098');
+}
+function drawKiwi(x,y,t,k){
+  const b=Math.round(Math.sin(t/180+k*2)*1);y+=b;const st=((t/220+k)|0)%2;
+  R(g,x-4,y+6,2,5+st,'#c8a070');R(g,x+2,y+6,2,6-st,'#c8a070');R(g,x-5,y+11+st,4,1,'#c8a070');R(g,x+1,y+12-st,4,1,'#c8a070');
+  ell(g,x,y,9,8,K);ell(g,x,y,8,7,'#8a6a40');R(g,x-5,y-4,3,1,'#a8885a');R(g,x+2,y+2,3,1,'#6a4a2a');R(g,x-3,y+3,1,1,'#a8885a');R(g,x+4,y-2,1,1,'#a8885a');
+  R(g,x-4,y-3,2,2,K);R(g,x-4,y-3,1,1,'#fff');R(g,x+2,y-3,2,2,K);R(g,x+2,y-3,1,1,'#fff');
+  R(g,x-14,y-1,11,2,K);R(g,x-13,y-1,10,1,'#e8d8b0');R(g,x-5,y,1,1,'#f39a9a');R(g,x+4,y,1,1,'#f39a9a');
+}
+function drawAny(c,x,y,mood,t){
+  if(c.kind==='kiwi'){drawKiwi(x+2,y+8,t,2);drawKiwi(x-8,y+24,t,0);drawKiwi(x+12,y+24,t,1);if(mood==='happy'){R(g,x-2,y+2,2,2,'#ff6aa8');R(g,x+1,y+2,2,2,'#ff6aa8');}return;}
+  if(c.kind==='cat'){drawCat(x,y,t,mood);return;}
+  if(c.kind==='couple'){
+    drawChar(g,x-13,y+2,c,mood,t);
+    drawChar(g,x+13,y+3,{hair:c.hair2,hairL:'#f0c08a',shirt:c.shirt2,shirtD:c.shirt2D,style:'long',off:c.off+1.3},mood,t);
+    const b=((t/400)|0)%2;R(g,x-2,y-4-b,2,2,'#ff6aa8');R(g,x+1,y-4-b,2,2,'#ff6aa8');R(g,x-1,y-2-b,3,2,'#ff6aa8');return;
+  }
+  drawChar(g,x,y,c,mood,t);
+}
+function moodOf(c){if(c.stun>0)return'stun';if(c.moodT>0)return c.mood;if(c.debuff&&c.debuff.type==='sleepy')return'sleepy';if(c.sat<20)return'hungry';return'normal';}
+
+// ---------- food sprites ----------
+function drawIng(c,type,x,y,col,s,t){
+  x=Math.round(x);y=Math.round(y);
+  if(type==='meat'){const sh=s==='over'?1:0;R(c,x-5+sh,y-3,10-2*sh,7-sh,K);R(c,x-4+sh,y-2,8-2*sh,5-sh,col);const fat=s==='raw'?'#f8dde2':'#efe2d8';R(c,x-3+sh,y-1,5-sh,1,fat);R(c,x-1,y+1,4-sh,1,fat);R(c,x-4+sh,y-2,2,1,'rgba(255,255,255,.35)');}
+  else if(type==='ball'){ell(c,x,y,4,4,K);ell(c,x,y,3,3,col);R(c,x-2,y-2,1,1,'#fff8e8');if(s==='over')R(c,x,y-2,1,4,'#6a4a2a');}
+  else if(type==='egg'){R(c,x-5,y-1,10,4,K);R(c,x-4,y-3,8,2,K);R(c,x-3,y-4,6,1,K);R(c,x-4,y-2,8,4,col);R(c,x-3,y-3,6,1,col);for(let i=0;i<4;i++)R(c,x-4+i*2,y+1,1,1,'#b07a2a');R(c,x-2,y-2,2,1,'rgba(255,255,255,.4)');}
+  else if(type==='cab'){R(c,x-5,y-3,10,7,K);R(c,x-4,y-4,6,1,K);R(c,x-4,y-2,8,5,col);R(c,x-3,y-3,5,1,col);R(c,x-2,y,5,1,'rgba(255,255,255,.35)');R(c,x,y-2,1,4,'rgba(255,255,255,.35)');}
+  else if(type==='taro'){
+    if(s==='mut'){const p=((t/220)|0)%2;R(c,x-5,y-5,10,10,p?'#8a4bff':'#4a1fa8');R(c,x-4,y-4,8,8,'#25124f');R(c,x-3,y-2,2,2,'#e8d8ff');R(c,x+1,y-2,2,2,'#e8d8ff');R(c,x-2,y+2,4,1,'#b46bff');R(c,x-1,y+1,1,1,'#b46bff');}
+    else{R(c,x-4,y-4,8,8,K);R(c,x-3,y-3,6,6,col);const dot=s==='raw'?'#9b85c4':'#7a5ab0';R(c,x-2,y-2,1,1,dot);R(c,x+1,y,1,1,dot);R(c,x-1,y+1,1,1,dot);R(c,x-3,y-3,6,1,'rgba(255,255,255,.25)');}
+  }
+  else if(type==='cil'){
+    const mut=s==='mut',p=((t/200)|0)%2;const cc=mut?(p?'#9dff3b':'#6aff1a'):col,dk=mut?'#1f6a10':'#2a6a26';
+    R(c,x-1,y-1,1,6,dk);[[-5,-4],[0,-6],[2,-2],[-4,0]].forEach(([dx,dy])=>{R(c,x+dx-1,y+dy-1,5,4,K);R(c,x+dx,y+dy,3,2,cc);R(c,x+dx+1,y+dy,1,1,'rgba(255,255,255,.4)');});
+    if(mut){R(c,x-6,y-7,1,1,'#eaffb0');R(c,x+5,y-3,1,1,'#eaffb0');}
+  }
+  else if(type==='fen'){
+    const mut=s==='mut';const cc=mut?'#2a5a20':col;
+    R(c,x-5,y-4,10,9,K);for(let i=0;i<5;i++)R(c,x-4+i*2,y-3+(i%2),1,7-(i%2),cc);R(c,x-4,y+3,8,1,mut?'#1a3a14':'#4a7a3a');
+    if(mut){const p=((t/250)|0)%2;R(c,x-3,y-5,2,2,p?'#ffe066':'#ffb020');R(c,x+2,y-6,2,2,p?'#ffb020':'#ffe066');R(c,x,y-4,1,1,'#fff');}
+  }
+  else if(type==='duck'){R(c,x-4,y-4,8,8,K);R(c,x-3,y-3,6,6,col);R(c,x-2,y-2,2,1,'rgba(255,255,255,.3)');R(c,x+1,y+1,1,1,'rgba(0,0,0,.35)');}
+  else if(type==='tofu'){R(c,x-4,y-4,8,8,K);R(c,x-3,y-3,6,6,col);R(c,x-3,y-3,6,1,'#ffffff');R(c,x-1,y-1,1,1,'rgba(0,0,0,.18)');R(c,x+1,y+1,1,1,'rgba(0,0,0,.18)');}
+  else if(type==='enoki'){R(c,x-5,y-4,10,9,K);for(let i=0;i<4;i++){R(c,x-4+i*2,y-2,1,6,col);R(c,x-4+i*2,y-3,2,1,'#fffaf0');}R(c,x-4,y+3,8,1,'#c9b98a');}
+  else if(type==='corn'){R(c,x-4,y-5,8,10,K);R(c,x-3,y-4,6,8,col);for(let i=0;i<3;i++)for(let j=0;j<4;j++)R(c,x-3+i*2,y-4+j*2+1,1,1,'rgba(150,90,0,.45)');}
+  else if(type==='wagyu'){R(c,x-6,y-4,12,8,K);R(c,x-5,y-3,10,6,col);const f='#fff6f2';R(c,x-4,y-2,3,1,f);R(c,x,y-2,4,1,f);R(c,x-3,y,5,1,f);R(c,x+2,y+1,2,1,f);R(c,x-5,y+1,2,1,f);}
+  else if(type==='crab'){R(c,x-7,y-3,15,7,K);R(c,x-6,y-2,9,5,col);R(c,x+3,y-2,4,5,'#fff4ee');R(c,x-4,y-2,1,5,'rgba(0,0,0,.25)');R(c,x,y-2,1,5,'rgba(0,0,0,.25)');R(c,x-6,y-2,9,1,'#ff9a7a');}
+  else if(type==='mystery'){
+    ell(c,x,y,7,7,'rgba(255,224,102,.3)');ell(c,x,y,5,5,K);ell(c,x,y,4,4,'#ffcf3b');R(c,x-2,y-3,2,2,'#fff8d0');R(c,x+1,y+1,2,2,'#d89a18');
+    for(let i=0;i<2;i++){const a=t/260+i*Math.PI;R(c,x+Math.cos(a)*9,y+Math.sin(a)*5,1,1,'#ffffff');}
+  }
+  else if(type==='drink'){R(c,x-4,y-6,9,12,K);R(c,x-3,y-5,7,10,'#d8f0ff');R(c,x-3,y-2,7,7,'#c8a070');R(c,x-2,y+2,1,1,'#2a1a10');R(c,x,y+3,1,1,'#2a1a10');R(c,x+2,y+2,1,1,'#2a1a10');R(c,x-2,y-4,2,2,'#fff');R(c,x+1,y-3,2,2,'#eef8ff');R(c,x+1,y-9,1,5,'#ff6aa8');R(c,x+2,y-9,2,1,'#ff6aa8');}
+  else if(type==='momegg'){ell(c,x,y,5,4,K);ell(c,x,y,4,3,'#8a4a1a');R(c,x-2,y-2,2,1,'#c07a3a');R(c,x+1,y,2,2,'#5a2a0a');R(c,x+5,y-5,1,2,'#ff6aa8');R(c,x+4,y-4,3,1,'#ff6aa8');}
+}
+
+// ---------- pot ----------
+function drawDecor(bk,x,y,t,side){
+  const rot=t/9000;
+  for(const d of brothDecor[bk]){
+    const a=d.a+rot*(1-d.d/40),px=x+Math.cos(a)*d.d,py=y+1+Math.sin(a)*d.d;
+    if(side<0&&px>x-4)continue;if(side>0&&px<x+4)continue;
+    if(d.type==='oil'){ell(g,px,py,4,3,'#c03220');R(g,px-2,py-1,2,1,'#e0582c');}
+    else if(d.type==='chili'){const h=d.rot>0.5;R(g,px-2,py-1,h?6:3,h?3:5,K);R(g,px-1,py,h?4:1,h?1:3,'#ff3b2a');R(g,px+(h?3:0),py+(h?0:-2),1,1,'#4caf50');}
+    else if(d.type==='pepper'){R(g,px,py,2,2,'#3a0d08');R(g,px,py,1,1,'#6a2418');}
+    else if(d.type==='garlic'){R(g,px,py,3,2,'#f5ead0');}
+    else if(d.type==='ripple'){const k=(t/1500+d.ph)%1;const r=2+k*5;g.fillStyle=`rgba(255,248,220,${0.5*(1-k)})`;g.fillRect(Math.round(px-r),Math.round(py),Math.round(r*2),1);}
+    else if(d.type==='kelp'){for(let i=0;i<7;i++)R(g,px+i*1.5-5,py+Math.sin(i+d.ph+t/600)*1.5,2,2,i%3?'#2f4a2a':'#3e5e35');}
+    else if(d.type==='onion'){R(g,px-1,py-1,3,3,'#6fbf4a');R(g,px,py,1,1,'#d7f2b5');}
+    else if(d.type==='mush'){ell(g,px,py,3,3,'#5a3a24');R(g,px-1,py-1,2,1,'#8a6040');}
+    else if(d.type==='fat'){R(g,px,py,2,1,'#fffaf0');R(g,px+1,py+1,1,1,'#fffaf0');}
+    else if(d.type==='cabbage'){const h=d.rot>0.5;R(g,px,py,h?6:2,h?2:6,'#b7bd5e');R(g,px,py,h?6:1,1,'#d2d77e');}
+    else if(d.type==='pork'){R(g,px-3,py-2,7,4,'#d8b0a6');R(g,px-2,py-1,5,2,'#f4d8cf');R(g,px-3,py+1,7,1,'#fff4ee');}
+    else if(d.type==='bonepc'){R(g,px-3,py-1,6,2,'#fffaf0');R(g,px-4,py-2,2,2,'#f0e6d0');R(g,px+2,py,2,2,'#f0e6d0');}
+    else if(d.type==='goji'){R(g,px,py,2,1,'#e0302a');}
+  }
+}
+function drawPot(t,hoverSide){
+  const x=POT.x,y=POT.y;
+  ell(g,x+2,y+4,44,42,'rgba(0,0,0,.35)');
+  R(g,x-49,y-5,9,10,K);R(g,x-48,y-4,7,8,'#3a3a40');R(g,x+40,y-5,9,10,K);R(g,x+41,y-4,7,8,'#3a3a40');
+  ell(g,x,y,42,42,K);ell(g,x,y,41,41,'#8a9099');ell(g,x,y,39,39,'#d0d6df');ell(g,x-1,y-1,37,37,'#eef2f6');ell(g,x,y,37,37,'#b8bec8');ell(g,x,y,35,35,'#6b7079');
+  if(potMode==='yy'){
+    const L=BROTHS[YY.L.key],Rb=BROTHS[YY.R.key];
+    ellHalf(g,x,y+1,34,L.rim,-1);ellHalf(g,x,y+1,32,L.base,-1);ellHalf(g,x,y+1,34,Rb.rim,1);ellHalf(g,x,y+1,32,Rb.base,1);
+    drawDecor(YY.L.key,x,y,t,-1);drawDecor(YY.R.key,x,y,t,1);
+    if(hoverSide){ellHalf(g,x,y+1,32,'rgba(255,224,102,.25)',hoverSide==='L'?-1:1);}
+    R(g,x-2,y-34,4,70,K);R(g,x-1,y-34,2,70,'#d0d6df');
+    if(Math.random()<0.5){const sd=Math.random()<0.65?-1:1,a=Math.random()*6.28,d=Math.random()*28,px=x+Math.abs(Math.cos(a)*d)*sd,py=y+1+Math.sin(a)*d;parts.push({x:px,y:py,vx:0,vy:0,l:0.25,col:sd<0?L.bub:Rb.bub,sz:Math.random()<0.3?2:1,pot:1});}
+  }else{
+    const B=broth;ell(g,x,y+1,34,34,B.rim);ell(g,x,y+1,32,32,B.base);drawDecor(brothKey,x,y,t,0);
+    if(Math.random()<0.35){const a=Math.random()*6.28,d=Math.random()*29;parts.push({x:x+Math.cos(a)*d,y:y+1+Math.sin(a)*d,vx:0,vy:0,l:0.25,col:B.bub,sz:Math.random()<0.3?2:1,pot:1});}
+  }
+  ell(g,x-12,y-14,8,2,'rgba(255,255,255,.12)');
+  if(soupBuff>0){for(let i=0;i<16;i++){const a=i/16*Math.PI*2+t/600;R(g,x+Math.cos(a)*40,y+Math.sin(a)*40,2,2,((t/200+i)|0)%2?'#ffe066':'#fff4c4');}}
+  if(scolding()){g.fillStyle='rgba(20,30,60,.25)';ell(g,x,y+1,32,32,'rgba(20,30,60,.25)');}
+}
+function drawPlate(i,t,hover){
+  const[x,y]=PLATE_POS[i],k=plates[i];
+  ell(g,x+1,y+2,12,5,'rgba(0,0,0,.3)');ell(g,x,y,12,6,hover?'#ffe066':K);ell(g,x,y,11,5,'#eceaf2');ell(g,x,y,8,3,'#d6d3e2');
+  if(!k)return;const n=Math.min(3,stock[k]);
+  for(let j=0;j<n;j++)drawIng(g,k,x-5+j*5,y-1+(j%2),ING[k].raw,'raw',t);
+}
+function drawBowl(x,y){ell(g,x,y+1,7,4,'rgba(0,0,0,.3)');ell(g,x,y,7,4,K);ell(g,x,y,6,3,'#f3efe6');ell(g,x,y,4,2,'#8a4a20');R(g,x,y-1,2,1,'#f2c94c');R(g,x+8,y-4,1,7,'#c9a26b');R(g,x+10,y-4,1,7,'#c9a26b');}
+function drawTray(t,hover){
+  const tw=level.drinks?136:112;R(g,8,222,tw,42,K);R(g,9,223,tw-2,40,'#6e4428');R(g,11,225,tw-6,36,'#a8744a');R(g,11,225,tw-6,1,'#c48a5a');
+  for(const k in TRAY_POS){
+    if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;
+    const[x,y]=TRAY_POS[k];
+    ell(g,x,y+1,11,6,hover===k?'#ffe066':K);ell(g,x,y+1,10,5,tray[k]>0?'#f5ecd2':'#8a6440');
+    if(tray[k]>0){if(k==='mystery'&&((t/400)|0)%2)ell(g,x,y,13,8,'rgba(255,224,102,.18)');drawIng(g,k,x,y,ING[k].raw||'#fff',k==='mystery'||k==='momegg'||k==='drink'?'special':'raw',t);}
+  }
+}
+
+// ---------- room ----------
+const starPos=Array.from({length:16},(_,i)=>[34+(i*37)%58,9+(i*13)%20]);
+function drawRoom(t){
+  R(g,0,0,W,H,'#6b4630');
+  for(let y=44,r=0;y<H;y+=10,r++){R(g,0,y,382,1,'#57382a');for(let x=(r%3)*23;x<382;x+=69)R(g,x,y+1,1,9,'#57382a');}
+  for(let y=48;y<H;y+=20)for(let x=12+(y%40);x<382;x+=47)R(g,x,y,3,1,'#7a5238');
+  ell(g,TABLE.x,TABLE.y+4,128,100,'#4a1d27');ell(g,TABLE.x,TABLE.y+4,124,96,'#7a3442');ell(g,TABLE.x,TABLE.y+4,116,89,'#5a2430');
+  for(let i=0;i<36;i++){const a=i/36*Math.PI*2;R(g,TABLE.x+Math.cos(a)*120,TABLE.y+4+Math.sin(a)*92,2,2,'#e0b84a');}
+  R(g,0,0,382,42,'#3a2e58');
+  for(let x=6;x<382;x+=12)for(let y=6;y<40;y+=10)R(g,x+((y/10|0)%2)*6,y,1,1,'#4a3c6c');
+  R(g,0,0,382,2,'#241a36');R(g,0,40,382,4,'#241a36');R(g,0,40,382,1,'#4a3c6c');
+  R(g,28,4,72,34,'#1a1208');R(g,30,6,68,30,'#6b4a2f');R(g,32,8,64,26,isDay()?'#7ec8ff':'#0f1838');
+  if(isDay()){ell(g,84,15,5,5,'#fff4a0');R(g,36,12,14,3,'#fff');R(g,40,10,8,2,'#fff');R(g,32,26,64,8,'#5a8a5a');R(g,40,22,10,12,'#c8b8a0');R(g,58,24,14,10,'#d8c8b0');R(g,78,20,12,14,'#b8a890');}else{
+  starPos.forEach(([x,y],i)=>{if(((t/500+i)|0)%6)R(g,x,y,1,1,'#cfd8ff');});
+  ell(g,86,15,4,4,'#f5e6a8');ell(g,88,14,3,3,'#0f1838');
+  R(g,32,26,14,8,'#0a0f22');R(g,48,22,12,12,'#0a0f22');R(g,62,27,16,7,'#0a0f22');R(g,80,24,16,10,'#0a0f22');
+  [[36,28],[51,25],[66,29],[84,27],[90,30]].forEach(([x,y],i)=>{if(((t/300+i)|0)%3)R(g,x,y,1,1,'#ffd36b');});}
+  const nz=isDay()?0:Math.min(3,zombies.length>>1);
+  for(let i=0;i<nz;i++){const zx=38+i*20,zy=22+Math.sin(t/500+i)*1;R(g,zx,zy,10,12,'#121c10');if(((t/700+i)|0)%4){R(g,zx+2,zy+4,2,1,'#b6ff3b');R(g,zx+6,zy+4,2,1,'#b6ff3b');}}
+  if(angel&&angel.phase!=='up'){g.fillStyle='rgba(255,240,170,.35)';g.fillRect(32,8,64,26);}
+  R(g,63,8,2,26,'#6b4a2f');R(g,32,20,64,2,'#6b4a2f');R(g,24,34,80,3,'#8a6440');
+  R(g,20,2,10,38,'#7a2e3a');R(g,98,2,10,38,'#7a2e3a');R(g,22,2,2,38,'#9a3e4a');R(g,100,2,2,38,'#9a3e4a');
+  const cx=160,cy=20;ell(g,cx,cy,11,11,K);ell(g,cx,cy,10,10,'#8a6440');ell(g,cx,cy,8,8,'#f3efe6');
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;R(g,cx+Math.cos(a)*7,cy+Math.sin(a)*7,1,1,'#8a8a99');}
+  const hr=(level.bonus?12+gameT/DUR*1.5:state==='ending'?7:18+gameT/DUR*12),ha=(hr%12)/12*Math.PI*2-Math.PI/2,ma=(hr%1)*Math.PI*2-Math.PI/2;
+  for(let i=0;i<5;i++)R(g,cx+Math.cos(ha)*i,cy+Math.sin(ha)*i,1,1,K);
+  for(let i=0;i<7;i++)R(g,cx+Math.cos(ma)*i,cy+Math.sin(ma)*i,1,1,'#c0392b');
+  R(g,200,8,18,22,K);R(g,201,9,16,20,'#f3efe6');R(g,201,9,16,5,'#c0392b');R(g,205,17,8,8,'#c0392b');R(g,206,18,6,6,'#f3efe6');
+  R(g,282,24,64,18,'#3a2418');R(g,283,25,62,16,'#5e3d28');R(g,283,25,62,2,'#7a5236');R(g,313,27,1,14,'#3a2418');
+  R(g,292,2,44,26,'#0a0a0a');R(g,294,4,40,21,'#222');
+  const on=((t/350)|0)%2;if(isDay()){R(g,295,5,38,19,'#1f7a3a');R(g,295,7,38,5,'#6dff7a');R(g,298,15,28,1,'#fff');R(g,298,18,20,1,'#fff');}else{R(g,295,5,38,19,on?'#8a1010':'#5a0a0a');R(g,295,7,38,5,'#ffdd33');
+  for(let i=0;i<6;i++)R(g,297+i*6,9,4,1,'#8a1010');R(g,298,15,28,1,'#fff');R(g,298,18,20,1,'#fff');R(g,298,21,24,1,'#fff');}
+  const F=FRIDGE;
+  R(g,F.x,F.y,F.w,F.h,K);R(g,F.x+1,F.y+1,F.w-2,F.h-2,'#cfd8e0');R(g,F.x+1,F.y+16,F.w-2,1,K);
+  if(fridgeOpen>0){R(g,F.x+2,F.y+17,F.w-4,F.h-19,'#f4fbff');R(g,F.x+3,F.y+24,F.w-6,1,'#b8c8d8');R(g,F.x+3,F.y+32,F.w-6,1,'#b8c8d8');R(g,F.x-10,F.y+16,11,F.h-17,K);R(g,F.x-9,F.y+17,9,F.h-19,'#b8c4d0');}
+  else R(g,F.x+23,F.y+22,2,8,'#8a9099');
+  R(g,F.x+23,F.y+6,2,6,'#8a9099');R(g,F.x+3,F.y+3,6,4,'#ffcf6b');R(g,F.x+10,F.y+4,5,3,'#6fb04f');
+  if(state==='play'){R(g,F.x+2,F.y+F.h-4,F.w-4,2,K);R(g,F.x+2,F.y+F.h-4,Math.round((F.w-4)*(1-fridgeCD/(level.id>=7?14:18))),2,fridgeCD<=0?'#6dff7a':'#5aa0d8');
+    if(fridgeCD<=0&&((t/250)|0)%2){R(g,F.x+F.w-3,F.y-2,2,2,'#fff');R(g,F.x+2,F.y+12,1,1,'#fff');}}
+  // hallway door (mom comes from here)
+  R(g,0,150,6,60,K);R(g,0,151,5,58,mom&&mom.phase==='enter'?'#ffe9b0':'#5e3a20');
+  R(g,382,0,10,H,'#1c1530');R(g,382,0,1,H,'#4a3c6c');
+  const atDoor=zombies.some(z=>z.atDoor&&!z.dead);const dx=atDoor&&((t/90)|0)%4===0?1:0;const kn=knock.state==='active';
+  R(g,382,116,10,56,kn&&((t/200)|0)%2?'#ffe066':K);R(g,383+dx,117,8,54,'#7a4e2c');
+  for(let y=121;y<170;y+=8)R(g,383+dx,y,8,1,'#5e3a20');
+  R(g,384+dx,142,2,3,'#e0b84a');
+  if(doorHP<66){R(g,386+dx,126,1,4,K);R(g,387+dx,129,1,3,K);}
+  if(doorHP<33){R(g,385+dx,152,1,5,K);R(g,388+dx,150,1,4,K);R(g,386+dx,160,2,1,K);}
+  R(g,392,0,88,H,isDay()?'#8a8c94':'#25272e');
+  for(let y=0;y<H;y+=14)R(g,392,y,88,1,'#1d1f25');for(let x=404;x<W;x+=22)for(let y=0;y<H;y+=14)R(g,x+((y/14|0)%2)*11,y,1,14,'#1d1f25');
+  R(g,472,0,8,H,'#3a3c44');for(let y=4;y<H;y+=12)R(g,472,y,8,2,'#55575f');
+  ell(g,440,232,10,4,'#1a2a3a');ell(g,440,232,8,3,'#22384c');
+  R(g,392,116,4,56,'rgba(255,190,110,0.12)');
+}
+
+// ---------- zombies ----------
+function drawZombie(z,t){
+  const x=Math.round(z.x),y=Math.round(z.y+Math.sin(t/220+z.ph));
+  g.globalAlpha=z.dead>0?Math.max(0,z.dead/0.5):1;
+  const skin=z.poison>0?'#9a7ac0':z.slow>0?'#b8d86a':'#8fb37a';
+  ell(g,x,y+27,8,2,'rgba(0,0,0,.45)');
+  const st=((t/(z.flee?90:200)+z.ph)|0)%2;R(g,x-5,y+23,4,4+st,K);R(g,x+1,y+23,4,5-st,K);
+  const cloth=z.type==='rider'?'#2f6db5':z.type==='picky'?'#7a4a8a':'#4b4f5c';
+  R(g,x-7,y+10,14,15,K);R(g,x-6,y+11,12,13,cloth);R(g,x-6,y+20,12,4,'rgba(0,0,0,.2)');R(g,x-2,y+14,3,2,'#7a2030');
+  if(z.type==='picky'){R(g,x-5,y+11,10,8,'#ffd0e4');R(g,x-5,y+13,10,1,'#ff7ab0');R(g,x-5,y+16,10,1,'#ff7ab0');}
+  if(z.type==='rider'){R(g,x+5,y+8,9,12,K);R(g,x+6,y+9,7,10,'#e67e22');R(g,x+7,y+10,5,1,'#ffb060');}
+  const arm=z.atDoor?((t/160+z.ph)|0)%2:0;
+  if(z.type==='picky'){R(g,x-8,y+13,16,4,K);R(g,x-7,y+14,14,2,skin);}
+  else{R(g,x-15,y+11+arm,10,4,K);R(g,x-14,y+12+arm,9,2,skin);}
+  R(g,x-7,y-1,14,12,K);R(g,x-6,y,12,10,skin);R(g,x-6,y,12,3,'#2f3b22');R(g,x-6,y+3,2,3,'#2f3b22');R(g,x+3,y,3,2,'#2f3b22');
+  if(z.type==='rider'){R(g,x-7,y-2,14,5,K);R(g,x-6,y-1,12,3,'#2f6db5');R(g,x-5,y-1,4,1,'#7fb0f0');}
+  if(z.confuse>0){const a=t/120;R(g,x+Math.cos(a)*5,y-4+Math.sin(a)*2,2,2,'#ffe066');R(g,x-4,y+5,2,1,'#ff3b3b');R(g,x+1,y+6,2,1,'#ff3b3b');}
+  else{R(g,x-4,y+5,2,2,'#ff3b3b');R(g,x+1,y+5,2,2,'#ff3b3b');}
+  R(g,x-3,y+8,4,1,z.flee?'#fff':'#4a1020');
+  if(z.poison>0&&Math.random()<0.2)parts.push({x:x+Math.random()*10-5,y:y,vx:0,vy:-12,l:0.6,col:'#b46bff',sz:1});
+  if(z.slow>0&&Math.random()<0.15)parts.push({x:x+Math.random()*10-5,y:y+4,vx:0,vy:-8,l:0.5,col:'#9dff3b',sz:1});
+  if(z.distract>0){ell(g,x,y-9,4,3,K);ell(g,x,y-9,3,2,'#f3efe6');R(g,x-1,y-10,2,1,'#c0392b');}
+  if(z.type==='picky'&&!z.flee&&!z.dead){
+    R(g,x-8,y-20,16,13,K);R(g,x-7,y-19,14,11,'#fff');R(g,x-2,y-8,3,2,'#fff');R(g,x-2,y-7,1,2,K);
+    drawIng(g,z.hate,x,y-14,ING[z.hate].ok,'ok',t);
+    for(let i=0;i<9;i++){R(g,x-5+i,y-18+i,1,1,'#e74c3c');R(g,x+3-i,y-18+i,1,1,'#e74c3c');}
+  }
+  if(z.flee&&((t/150)|0)%2){R(g,x+8,y-6,6,1,'#fff');R(g,x+10,y-9,1,7,'#fff');}
+  if(z.hp<z.max&&!z.dead&&z.type!=='boss'){R(g,x-7,y-5,14,2,K);R(g,x-7,y-5,Math.max(0,14*z.hp/z.max),2,'#e74c3c');}
+  g.globalAlpha=1;
+}
+const bossCv=document.createElement('canvas');bossCv.width=44;bossCv.height=46;const bc=bossCv.getContext('2d');
+function drawBoss(z,t){
+  bc.clearRect(0,0,44,46);const x=22,y=4+Math.round(Math.sin(t/300));const rage=z.phase===2;
+  const skin=z.poison>0?'#9a7ac0':rage?'#b8a050':'#8fb37a';
+  ell(bc,x,42,16,3,'rgba(0,0,0,.5)');
+  const st=((t/260)|0)%2;R(bc,x-9,y+32,6,6+st,K);R(bc,x+3,y+32,6,7-st,K);
+  ell(bc,x,y+24,15,13,K);ell(bc,x,y+24,14,12,'#e8e4d8');R(bc,x-4,y+20,3,3,'#c9b98a');R(bc,x+5,y+27,4,2,'#c9b98a');
+  R(bc,x-7,y+13,14,9,'#c0392b');R(bc,x-7,y+16,14,1,'#fff');R(bc,x-7,y+19,14,1,'#fff');
+  const arm=z.atDoor?((t/200)|0)%2:0;
+  R(bc,x-21,y+15+arm,13,6,K);R(bc,x-20,y+16+arm,12,4,skin);
+  R(bc,x-22,y+9+arm,1,14,'#c9a26b');R(bc,x-20,y+9+arm,1,14,'#c9a26b');
+  R(bc,x+12,y+18,6,10,K);R(bc,x+13,y+19,4,8,skin);
+  R(bc,x-10,y-1,20,16,K);R(bc,x-9,y,18,14,skin);R(bc,x-9,y,18,3,'#2f3b22');
+  R(bc,x-10,y+2,20,3,K);R(bc,x-9,y+3,18,1,'#e74c3c');R(bc,x+8,y+1,4,4,'#e74c3c');R(bc,x+1,y+3,2,1,'#fff');
+  const eye=rage?'#ffee00':'#ff3b3b';R(bc,x-6,y+6,3,3,eye);R(bc,x+3,y+6,3,3,eye);
+  const mo=((t/180)|0)%2;R(bc,x-5,y+10,10,mo?4:3,'#4a1020');R(bc,x-4,y+10,8,1,'#fff');R(bc,x+3,y+13,1,3,'#9fd3ff');
+  if(rage&&Math.random()<0.3)parts.push({x:z.x+Math.random()*30-15,y:z.y-6,vx:0,vy:-14,l:0.6,col:'#ff6a3a',sz:2});
+  g.globalAlpha=z.dead>0?Math.max(0,z.dead/1.2):1;
+  g.drawImage(bossCv,Math.round(z.x-44),Math.round(z.y-12),88,92);
+  g.globalAlpha=1;
+}
+function drawGuardWeapon(p,t,c){
+  const sw=((t/170)|0)%2&&zombies.some(z=>!z.dead&&z.x<=CFG.guardRange);
+  const x=p.x+12,y=p.y+(sw?16:22);
+  if(c.nb==='police'){R(g,x,y,12,2,K);R(g,x,y,11,1,'#3a3a4a');}
+  else if(c.nb==='sword'){R(g,x,y,22,2,K);R(g,x+3,y,19,1,'#e8eef8');R(g,x,y-2,2,6,'#c0a040');}
+  else if(c.nb==='volley'){}
+  else if(c.nb==='bo'&&c.id==='bo'){R(g,x,y,13,2,K);R(g,x,y,12,1,'#6a4a2a');R(g,x+11,y-3,7,7,K);R(g,x+12,y-2,5,5,'#5a5f68');}
+  else{R(g,x,y,14,2,K);R(g,x,y,13,1,'#c8ced8');R(g,x+12,y-2,5,5,K);R(g,x+13,y-1,3,3,'#c8ced8');}
+}
+function drawAngel(t){
+  const a=angel,x=Math.round(a.x),y=Math.round(a.y);
+  g.fillStyle='rgba(255,240,170,0.13)';g.fillRect(x-16,0,32,y+36);g.fillStyle='rgba(255,252,220,0.12)';g.fillRect(x-8,0,16,y+36);
+  const f=((t/140)|0)%2*3;
+  [-1,1].forEach(s=>{const wx=s<0?x-27:x+14;R(g,wx,y+12-f,13,11,K);R(g,wx+1,y+13-f,11,9,'#ffffff');R(g,wx+2,y+19-f,9,1,'#d8e0f0');R(g,s<0?wx-3:wx+10,y+9-f,6,6,K);R(g,s<0?wx-2:wx+11,y+10-f,4,4,'#ffffff');});
+  drawChar(g,x,y,ANGEL_CH,'happy',t);
+  R(g,x-7,y-9,14,1,'#ffe066');R(g,x-7,y-6,14,1,'#ffe066');R(g,x-9,y-8,2,2,'#ffe066');R(g,x+7,y-8,2,2,'#ffe066');
+  const glow=a.phase==='wait'&&((t/220)|0)%2;
+  R(g,x-10,y+21,20,14,glow?'#ffe066':K);R(g,x-9,y+22,18,12,'#ff9ec7');R(g,x-1,y+22,2,12,'#ffe066');R(g,x-9,y+27,18,2,'#ffe066');
+  if(a.phase==='wait'){R(g,x-12,y+38,24,3,K);R(g,x-11,y+39,Math.round(22*a.t/8),1,'#ffe066');}
+  if(Math.random()<0.4)parts.push({x:x+Math.random()*40-20,y:y+Math.random()*40,vx:0,vy:8,l:0.7,col:Math.random()<0.5?'#fff':'#ffe066',sz:1});
+}
+function drawMom(t){
+  const x=Math.round(mom.x),y=mom.y+(mom.phase==='enter'||mom.phase==='leave'?((t/120)|0)%2:0);
+  const mood=mom.phase==='scold'?'angry':mom.phase==='leave'?'happy':'normal';
+  drawChar(g,x,y,MOM_CH,mood,t);
+  if(mom.phase==='scold'){const up=((t/180)|0)%2;R(g,x+12,y+(up?2:8),3,16,K);R(g,x+13,y+(up?3:9),1,14,'#6a4a2a');R(g,x+10,y+(up?-3:3),7,6,K);R(g,x+11,y+(up?-2:4),5,4,'#9aa0aa');}
+  if(mom.phase==='watch'){R(g,x-10,y+24,20,3,K);R(g,x-9,y+25,18,1,MOM_CH.shirt);R(g,x-12,y-12,24,3,K);R(g,x-11,y-11,Math.round(22*mom.t/CFG.momWatch),1,'#ff9ad0');}
+}
+
+// ---------- hit tests ----------
+function hitIng(x,y,t){for(const o of pot){const[p,q]=slotPos(o,t);if(Math.abs(x-p)<=6&&Math.abs(y-q)<=6)return o;}return null;}
+function hitPlate(x,y){for(let i=0;i<PLATE_POS.length;i++){const[p,q]=PLATE_POS[i];if(plates[i]&&Math.abs(x-p)<=12&&Math.abs(y-q)<=7)return i;}return -1;}
+function hitTray(x,y){for(const k in TRAY_POS){if(k==='momegg'&&!level.mom)continue;if(k==='drink'&&!level.drinks)continue;const[p,q]=TRAY_POS[k];if(Math.abs(x-p)<=11&&Math.abs(y-q)<=9)return k;}return null;}
+function hitChar(x,y){for(const c of active()){const p=charPos(c),w=c.kind==='couple'?27:15;if(x>=p.x-w&&x<=p.x+w&&y>=p.y-6&&y<=p.y+37)return c;}return null;}
+function hitFridge(x,y){return x>=FRIDGE.x-2&&x<=FRIDGE.x+FRIDGE.w+2&&y>=FRIDGE.y&&y<=FRIDGE.y+FRIDGE.h+2;}
+function hitAngel(x,y){return angel&&angel.phase==='wait'&&Math.abs(x-angel.x)<=18&&y>=angel.y+10&&y<=angel.y+40;}
+function hitDoor(x,y){return x>=376&&x<=398&&y>=110&&y<=178;}
+function inPot(x,y){return Math.hypot(x-POT.x,y-POT.y)<=40;}
+const potSide=x=>x<POT.x?'L':'R';
+function inThrow(x){return x>=376;}
+function hoverTarget(t){
+  if(state!=='play')return null;
+  if(held)return hitChar(mx,my)||(potMode==='yy'&&inPot(mx,my)?'side'+potSide(mx):null);
+  if(hitAngel(mx,my))return'angel';
+  const tk=hitTray(mx,my);
+  return hitIng(mx,my,t)||(tk&&tray[tk]>0?tk:null)||(hitPlate(mx,my)>=0?'p'+hitPlate(mx,my):null)||(hitFridge(mx,my)?'fridge':null)||(knock.state==='active'&&hitDoor(mx,my)?'door':null)||hitChar(mx,my);
+}
+
+// ---------- interaction ----------
+function click(x,y){
+  AC();if(state!=='play')return;
+  const t=performance.now();
+  if(held){
+    const c=hitChar(x,y);if(c){feed(c);return;}
+    if(inThrow(x)){throwItem(x,y);return;}
+    if(inPot(x,y)){dropHeldInPot(potMode==='yy'?potSide(x):null);return;}
+    if(hitTray(x,y)||hitPlate(x,y)>=0){returnHeld();return;}
+    return;
+  }
+  if(hitAngel(x,y)){signAngel();return;}
+  const o=hitIng(x,y,t);if(o){pot.splice(pot.indexOf(o),1);held=o;sfx.pick();return;}
+  const tk=hitTray(x,y);
+  if(tk){if(tray[tk]<=0)return;
+    if(SPECIAL(tk)){tray[tk]--;held={type:tk,src:'tray'};sfx.combo();return;}
+    if(potMode==='yy'){tray[tk]--;held=newItem(tk,'tray');sfx.pick();return;}
+    const it=newItem(tk,'tray');if(placeInPot(it))tray[tk]--;return;}
+  const pi=hitPlate(x,y);
+  if(pi>=0){const k=plates[pi];
+    if(stock[k]<=0){pop(PLATE_POS[pi][0],PLATE_POS[pi][1]-10,'沒了！去冰箱找找','#ff9a9a');sfx.bad();return;}
+    if(potMode==='yy'){stock[k]--;held=newItem(k,'plate');sfx.pick();return;}
+    if(placeInPot(newItem(k,'plate')))stock[k]--;return;}
+  if(hitFridge(x,y)){openFridge();return;}
+  if(knock.state==='active'&&hitDoor(x,y)){letNeighborIn();return;}
+  const c=hitChar(x,y);if(c)toggleGuard(c);
+}
+function dropHeldInPot(side){
+  if(SPECIAL(held.type)){returnHeld();return;}
+  if(placeInPot(held,side))held=null;
+}
+function returnHeld(){
+  const h=held;if(!h)return;
+  if(SPECIAL(h.type)){tray[h.type]++;held=null;sfx.pick();return;}
+  if(h.src==='plate'&&h.t===0){stock[h.type]=(stock[h.type]||0)+1;held=null;sfx.pick();return;}
+  if(h.src==='tray'&&h.t===0){tray[h.type]++;held=null;sfx.pick();return;}
+  if(placeInPot(h,null))held=null;
+}
+function toggleGuard(c){
+  const p=charPos(c);
+  if(level.bonus){pop(p.x,p.y-12,'今天中午不用守門～','#ffe9b0');return;}
+  if(c.kind==='cat'){pop(p.x,p.y-12,'喵？（貓咪不會守門，餵飽牠試試）','#ffe9b0');return;}
+  if(c.kind==='couple'){if(scolding()){pop(p.x,p.y-12,'被罵中……','#ffb0d0');return;}sendCouple(c);return;}
+  if(scolding()&&!c.guard){pop(p.x,p.y-12,'被罵中，不敢動……','#ffb0d0');return;}
+  if(c.stun>0){pop(p.x,p.y-12,'動不了……','#c9a6ff');sfx.bad();return;}
+  if(c.guard){c.guard=false;c.spot=-1;pop(c.seat.x,c.seat.y-12,'回來吃了！','#ffe9b0');sfx.pick();return;}
+  if(c.sat<10){pop(p.x,p.y-12,'太餓了，沒力氣……','#ff9a9a');sfx.bad();return;}
+  const used=new Set(CHARS.filter(o=>o.guard).map(o=>o.spot));
+  c.spot=[0,1,2,3].find(i=>!used.has(i));c.guard=true;
+  const q=GUARD_SPOTS[c.spot];pop(q.x,q.y-12,c.guardLine||'我來守門！','#9fd3ff');sfx.pick();
+}
+function setCombo(n,x,y){
+  combo=n;stats.bestCombo=Math.max(stats.bestCombo,n);
+  if(combo>=CFG.combo){combo=0;tray.mystery++;stats.mystery++;sfx.combo();burst(TRAY_POS.mystery[0],TRAY_POS.mystery[1],30,'#ffe066',36);pop(x,y-26,'連續完美！神秘食材出現了！','#ffe066',true);}
+}
+function feed(c){
+  const p=charPos(c);
+  if(c.guard){pop(p.x,p.y-12,'在守門中！','#9fd3ff');return;}
+  if(scolding()){pop(p.x,p.y-12,'媽媽在罵，不敢吃……','#ffb0d0');return;}
+  const o=held,s=stOf(o);
+  if(o.type==='drink'){held=null;if(c.sat>=95){pop(p.x,p.y-12,'喝不下了……','#d9b38c');addWaste(p.x,p.y+4,'');return;}c.sat=Math.min(100,c.sat+25);c.mood='happy';c.moodT=1;score+=8;pop(p.x,p.y-12,'透心涼～ +25','#bfe6ff');sfx.good();if(c.kind==='cat'&&c.sat>=100&&!level.bonus)catAttack(c);return;}
+  if(o.type==='momegg'){held=null;c.sat=Math.min(100,c.sat+40);if(c.kind==='cat'&&c.sat>=100&&!level.bonus){catAttack(c);return;}c.stun=0;c.debuff=null;c.mood='happy';c.moodT=1.5;stats.momegg++;score+=15;pop(p.x,p.y-12,'媽媽的味道……！ +40','#ffd38a',true);sfx.chime();return;}
+  if(c.stun>0){pop(p.x,p.y-12,'暈著吃不了……','#c9a6ff');return;}
+  if(c.kind==='cat'){
+    if(s==='mut'){pop(p.x,p.y-12,'哈——！（貓咪不吃這個）','#ff9a9a');sfx.bad();return;}
+    if(o.src!=='pot'&&o.t===0&&s==='raw'){pop(p.x,p.y-12,'喵？（生的不要）','#ffcf6b');return;}
+    held=null;let mul=s==='special'?10:s==='ok'?1:s==='raw'?0.4:0.6;if(['meat','wagyu','crab'].includes(o.type))mul*=1.5;if(soupBuff>0)mul*=1.3;
+    const gain=Math.round((ING[o.type].val||20)*mul*1.3);c.sat=Math.min(100,c.sat+gain);score+=gain;c.mood='happy';c.moodT=1;
+    pop(p.x,p.y-12,`喵～ +${gain}`,'#ffe066');sfx.eat();if(s==='ok')setCombo(combo+1,p.x,p.y);else if(s!=='special')setCombo(0);
+    if(c.sat>=100){if(level.bonus){c.sat=55;score+=50;pop(p.x,p.y-24,'呼嚕呼嚕……（滿足）+50','#ffe066',true);sfx.chime();}else catAttack(c);}return;
+  }
+  if(o.src!=='pot'&&o.t===0&&s==='raw'){pop(p.x,p.y-12,'還是生的！先下鍋','#ffcf6b');return;}
+  const d=ING[o.type];held=null;
+  if(s==='special'&&c.nb==='sword'){active().forEach(o2=>{if(!o2.guard&&o2.kind!=='cat'&&o2.kind!=='couple'){o2.sat=100;o2.stun=0;o2.debuff=null;o2.mood='power';o2.moodT=2;}});score+=60;slashT=0.6;pop(TABLE.x,TABLE.y-92,'劍俠：「劍氣・千人宴！」座位上全員體力全滿！','#ffe066',true);sfx.chime();return;}
+  if(s==='special'){c.sat=100;c.stun=0;c.debuff=null;c.mood='power';c.moodT=2.5;score+=30;pop(p.x,p.y-12,'黃金福丸！體力全滿！','#ffe066',true);sfx.chime();burst(p.x,p.y+14,40,'#ffe066',40);return;}
+  if(s==='mut'){
+    setCombo(0);
+    if(o.type==='taro'){c.stun=7;stats.poisonEat++;pop(p.x,p.y-12,'中毒了！動不了……','#b46bff');sfx.poison();burst(p.x,p.y+8,22,'#8a4bff',30);}
+    if(o.type==='cil'){c.debuff={type:'taste',t:10};c.mood='yuck';c.moodT=1.5;pop(p.x,p.y-12,'味覺錯亂！吃什麼都是香菜味……','#9dff3b');sfx.yuck();burst(p.x,p.y+8,18,'#9dff3b',26);}
+    if(o.type==='fen'){c.debuff={type:'sleepy',t:12};pop(p.x,p.y-12,'好……睏……','#a0c0ff');sfx.yuck();burst(p.x,p.y+8,14,'#a0c0ff',20);}
+    return;
+  }
+  if(c.kind!=='cat'&&c.sat>=95&&s!=='special'){held=null;c.mood='shock';c.moodT=1;setCombo(0);pop(p.x,p.y-12,'吃不下了啦……','#d9b38c');addWaste(p.x,p.y+4,'');return;}
+  if(o.type==='cil'&&!c.cil){c.mood='yuck';c.moodT=1.5;setCombo(0);pop(p.x,p.y-12,'我不吃香菜！！','#9dff3b',true);sfx.yuck();addWaste(p.x,p.y+4,'');return;}
+  let mul=s==='ok'?1:(s==='raw'?0.3:0.5),txt,col;
+  const fav=c.likes===o.type&&s==='ok';if(fav)mul*=1.5;
+  if(c.debuff&&c.debuff.type==='taste')mul*=0.3;
+  if(soupBuff>0)mul*=1.3;
+  if(c.eatMul)mul*=c.eatMul;
+  const gain=Math.round(d.val*mul);c.sat=Math.min(100,c.sat+gain);score+=gain;
+  if(s==='ok'){
+    stats.perfect++;score+=5;txt=(fav?'最愛！':o.type==='cil'?'香菜讚！':'完美！')+' +'+gain;col='#6dff7a';c.mood='happy';c.moodT=1.2;sfx.good();burst(p.x,p.y+14,10,'#ffe066',22);
+    if(o.type==='crab'){active().forEach(o2=>{if(o2!==c)o2.sat=Math.min(100,o2.sat+15);});pop(TABLE.x,TABLE.y-90,'帝王蟹大家分著吃！全員 +15','#ff9a7a',true);}
+    if(o.type==='wagyu'){score+=20;pop(p.x,p.y-26,'入口即化……！','#ffb0c0');}
+    setCombo(combo+1,p.x,p.y);
+  }else if(s==='raw'){txt='還沒熟啦！ +'+gain;col='#ffcf6b';c.mood='angry';c.moodT=1.2;sfx.bad();setCombo(0);}
+  else{txt='煮老了…… +'+gain;col='#d9b38c';c.mood='shock';c.moodT=1.0;sfx.eat();setCombo(0);if(level.mom)setTimeout(()=>addWaste(p.x,p.y+6,''),250);}
+  if(c.debuff&&c.debuff.type==='taste')txt+='（味覺錯亂）';
+  pop(p.x,p.y-12,txt,col);sfx.eat();
+}
+function throwItem(x,y){
+  const o=held;held=null;
+  const tx=Math.max(400,Math.min(465,x+30)),ty=Math.max(100,Math.min(170,y));
+  proj.push({o,sx:mx,sy:my,tx,ty,k:0});sfx.throwS();
+}
+function land(pr){
+  const o=pr.o,ty=o.type,mut=stOf(o)==='mut';
+  const near=r=>zombies.filter(z=>!z.dead&&!z.flee&&Math.hypot(z.x-pr.tx,z.y+12-pr.ty)<(z.type==='boss'?r+25:r));
+  if(ty==='mystery'){flashT=0.5;sfx.boom();let n=0;zombies.forEach(z=>{if(!z.dead&&!z.flee){z.hp-=90;n++;burst(z.x,z.y+10,14,'#ffe066',34);}});pop(436,90,`黃金福丸・全體攻擊！×${n}`,'#ffe066',true);return;}
+  if(ty==='momegg'){addWaste(pr.tx,pr.ty-10,'滷蛋丟出去了？！');return;}
+  if(ty==='drink'){burst(pr.tx,pr.ty,30,'#bfe6ff',34);sfx.splash();const zs=near(50);zs.forEach(z=>{z.slow=Math.max(z.slow,6);});if(zs.length)pop(pr.tx,pr.ty-16,`冰飲潑到了！緩速 ×${zs.length}`,'#bfe6ff');else addWaste(pr.tx,pr.ty-16,'冰飲潑空了！');return;}
+  if(mut){
+    stats.mutHit++;
+    if(ty==='taro'){stats.poisonHit++;burst(pr.tx,pr.ty,40,'#8a4bff',40);sfx.splash();const zs=near(48);zs.forEach(z=>{z.hp-=22;z.poison=5;});pop(pr.tx,pr.ty-16,zs.length?`毒芋命中 ×${zs.length}！`:'毒芋……沒丟中','#b46bff');}
+    if(ty==='cil'){burst(pr.tx,pr.ty,40,'#9dff3b',40);sfx.splash();const zs=near(55);zs.forEach(z=>{z.slow=8;z.hp-=8;if(z.type==='picky'&&z.hate==='cil')scare(z);});pop(pr.tx,pr.ty-16,zs.length?`香菜精！殭屍嗆到了 ×${zs.length}`:'香菜精……沒丟中','#9dff3b');}
+    if(ty==='fen'){burst(pr.tx,pr.ty,40,'#ffe066',40);sfx.splash();const zs=near(55);zs.forEach(z=>{z.confuse=z.type==='boss'?2.5:5;z.atDoor=false;if(z.type==='picky'&&z.hate==='fen')scare(z);});pop(pr.tx,pr.ty-16,zs.length?`茴香迷魂陣！×${zs.length}`:'茴香……沒丟中','#ffe066');}
+    return;
+  }
+  burst(pr.tx,pr.ty,10,'#f3efe6',20);
+  const zs=near(36);let used=false;
+  zs.forEach(z=>{
+    if(z.type==='picky'){if(z.hate===ty){scare(z);used=true;}}
+    else if(z.type==='boss'){z.distract=(ty==='wagyu'||ty==='crab')?3:1.5;z.hp=Math.min(z.max,z.hp+((ty==='wagyu'||ty==='crab')?30:10));used=true;pop(z.x,z.y-10,'大胃王吃掉了……','#ffcf6b');}
+    else{z.distract=(ty==='wagyu'||ty==='crab')?6:3;used=true;}
+  });
+  if(used&&level.ending){const n=zs.filter(z=>!z.flee).length;if(n){friendship+=n;pop(pr.tx,pr.ty-28,`殭屍好感 +${n}（${friendship}/${level.friend}）`,'#ffb0d0');}}
+  if(used&&!zs.some(z=>z.type==='boss'))pop(pr.tx,pr.ty-16,zs.some(z=>z.flee)?'挑食殭屍逃走了！':'殭屍停下來吃了……','#ffcf6b');
+  if(!used)addWaste(pr.tx,pr.ty-16,zs.some(z=>z.type==='picky')?'挑食殭屍不屑一顧……':'丟空了！');
+}
+function scare(z){if(z.flee)return;z.flee=true;z.atDoor=false;stats.picky++;stats.kills++;killsSinceAngel++;score+=15;sfx.yuck();pop(z.x,z.y-24,'噁——！'+ING[z.hate].name+'！','#9dff3b',true);}
+function spawnAngel(){angel={x:322,y:-50,phase:'down',t:8};killsSinceAngel=0;sfx.chime();pop(322,40,'天上有東西掉下來了……？！','#fff6c8',true);}
+function signAngel(){tray.wagyu+=2;tray.crab+=1;stats.angel++;angel.phase='up';sfx.chime();pop(angel.x,angel.y-14,'天使外送到！A5和牛 ×2、帝王蟹 ×1','#fff6c8',true);}
+function letNeighborIn(){
+  const c=CHARS[3];knock.state='done';c.active=true;doorHP-=8;sfx.thud();sfx.chime();stats.nb=stats.nb?stats.nb+'、'+c.name:c.name;c.swordT=8;c.spikeT=4;
+  c.sat=c.kind==='cat'?15:c.kind==='couple'?40:60;c.stealT=10;c.soupT=1.5;
+  burst(390,145,20,'#ffe066',30);pop(300,120,c.enterText,'#ffe9b0',true);
+  if(c.nb==='bo')setTimeout(()=>{if(state==='play')giveIngredient(120,200,'阿伯帶來：',1);},600);
+  if(c.kind==='cat')setTimeout(()=>{if(state==='play')pop(c.seat.x,c.seat.y-14,'餵飽牠，可能會有好事發生？','#ffe066');},1200);
+  if(c.kind==='couple')setTimeout(()=>{if(state==='play')pop(c.seat.x+20,c.seat.y-14,'點他們＝派出去帶走 2 隻殭屍','#ffb0d0');},1400);
+}
+function catAttack(c){
+  c.active=false;c.guard=false;stats.cat=true;flashT=0.45;slashT=0.9;sfx.boom();music.sting();
+  let n=0;zombies.forEach(z=>{if(!z.dead&&!z.flee){z.hp-=z.type==='boss'?150:120;n++;burst(z.x,z.y+10,10,'#ffffff',30);}});
+  pop(300,85,`黑貓吃飽了！夜之爪・大範圍攻擊 ×${n}！`,'#ffe066',true);
+  pop(c.seat.x,c.seat.y,'喵～（從窗戶跳走了）','#ffe9b0');burst(c.seat.x,c.seat.y+20,20,'#4a4060',30);
+  neighborLeft();
+}
+function sendCouple(c){
+  const zs=zombies.filter(z=>!z.dead&&!z.flee&&z.type!=='boss').sort((a,b)=>a.x-b.x).slice(0,2);
+  if(!zs.length){pop(c.seat.x+10,c.seat.y-14,'外面還沒有殭屍耶～','#ffb0d0');return;}
+  c.active=false;stats.couple=zs.length;
+  zs.forEach(z=>{z.flee=true;z.couple=true;z.atDoor=false;stats.kills++;killsSinceAngel++;score+=20;});
+  coupleOut={x:400,y:150};sfx.chime();
+  pop(300,110,'情侶：「我們帶他們去別的地方吃火鍋～♥」','#ffb0d0',true);
+  neighborLeft();
+}
+function swordServe(c){
+  const ready=pot.filter(o=>stOf(o)==='ok');if(!ready.length)return;
+  slashT=0.4;sfx.hit();let n=0;
+  ready.forEach(o=>{const eaters=active().filter(e=>e!==c&&!e.guard&&e.stun<=0&&e.kind!=='couple'&&e.kind!=='cat'&&(o.type!=='cil'||e.cil)&&e.sat<95).sort((a,b)=>a.sat-b.sat);
+    if(!eaters.length)return;const e=eaters[0];pot.splice(pot.indexOf(o),1);
+    let gain=ING[o.type].val*(e.likes===o.type?1.5:1)*(soupBuff>0?1.3:1)*(e.debuff&&e.debuff.type==='taste'?0.3:1)*(e.eatMul||1);gain=Math.round(gain);
+    e.sat=Math.min(100,e.sat+gain);score+=gain+5;stats.perfect++;e.mood='happy';e.moodT=1;n++;setCombo(combo+1,e.seat.x,e.seat.y);});
+  if(n)pop(POT.x,POT.y-50,`劍俠：「劍術・夾菜！」一口氣上了 ${n} 道`,'#e8e4d8',true);
+}
+function spike(c){
+  const zs=zombies.filter(z=>!z.dead&&!z.flee&&z.x<=CFG.guardRange+10);if(!zs.length)return;
+  const tg=zs.sort((a,b)=>a.x-b.x)[0];let n=0;
+  zombies.forEach(z=>{if(!z.dead&&!z.flee&&Math.hypot(z.x-tg.x,z.y-tg.y)<42){z.hp-=z.type==='boss'?60:45;n++;burst(z.x,z.y+10,8,'#ffe066',26);}});
+  balls.push({x:GUARD_SPOTS[c.spot].x+14,y:GUARD_SPOTS[c.spot].y+8,tx:tg.x,ty:tg.y+10,k:0});sfx.boom();
+  pop(tg.x,tg.y-14,`殺球！×${n}`,'#ffe066',true);
+}
+function coupleSteal(c){
+  const cand=pot.filter(o=>{const s=stOf(o);return s==='ok'||s==='over';});
+  if(cand.length){const o=cand[0];pot.splice(pot.indexOf(o),1);c.sat=Math.min(100,c.sat+ING[o.type].val);pop(c.seat.x+12,c.seat.y-14,`情侶：「這塊${ING[o.type].name}我們先吃囉～♥」`,'#ffb0d0');sfx.slurp();return;}
+  const ks=plates.filter(k=>k&&stock[k]>0);if(ks.length){const k=pick(ks);stock[k]--;c.sat=Math.min(100,c.sat+ING[k].val*0.5);pop(c.seat.x+12,c.seat.y-14,`情侶偷拿了一份${ING[k].name}……`,'#ffb0d0');}
+}
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&held)returnHeld();});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();if(held)returnHeld();});
+function toCanvas(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H];}
+cv.addEventListener('pointermove',e=>{[mx,my]=toCanvas(e);});
+cv.addEventListener('pointerdown',e=>{if(e.button===2)return;[mx,my]=toCanvas(e);click(mx,my);});
+
+// ---------- level select ----------
+const WHO={tv:'電視',taro:'小紫妹妹',meat:'阿強哥哥',sacha:'夢姊姊',bo:'（門外）'};
+let selLevel=LEVELS[0];
+function renderLevelList(){
+  const el=$('levelList');el.innerHTML='';
+  LEVELS.forEach(L=>{const b=document.createElement('button');const locked=!allUnlocked&&L.id>progress+1;
+    b.className=(L===selLevel?'sel ':'')+(locked?'lock':'');
+    b.innerHTML=(locked?'🔒 ':'')+(L.bonus?'☀ ':L.ending?'✦ ':'')+L.name+(progress>=L.id?' <span class="star">★</span>':'');
+    b.onclick=()=>{if(locked){return;}selLevel=L;renderLevelList();renderLevelInfo();};el.appendChild(b);});
+}
+function renderLevelInfo(){
+  const L=selLevel,el=$('levelInfo');level=L;
+  if(L.brothChoice){}else{brothKey=L.broth||'mala';broth=BROTHS[brothKey];}
+  potMode=L.pot==='yy'?'yy':'single';
+  const top=(lbLoad()[L.id]||[])[0];
+  let h=`<div class="sub">${L.sub}</div>${top?`<div class="best">本機最高分：${top.n.replace(/</g,'&lt;')} ${top.s} 分</div>`:''}<div class="story">${L.story.map(([w,s])=>`<p><b>${WHO[w]}</b>：${s}</p>`).join('')}</div><ul class="rules">${L.tips.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  if(L.bonus){h+=`<div class="best">目前最高紀錄：${'★'.repeat(loadBonus())||'尚未挑戰'}</div><div id="broths">${['bo','cat','couple','staff','police'].map(k=>`<button data-n="${k}"><b>${NB[k].name}</b><span>${NB_DESC[k].split('：')[1]||''}</span></button>`).join('')}</div>`;}
+  else if(L.ending){const e=loadEndings();h+=`<div class="best">結局收集：${e.length}/3 ${e.map(k=>({he1:'【吃到飽的早晨】',he2:'【一起圍爐】',be:'【最後一鍋】'})[k]).join('')}</div>`;}
+  if(L.id>=7&&!L.bonus){const b=loadBonus();h+=`<div class="best">獎勵關加成：${b?'★'.repeat(b)+' 開局帶 '+['','神秘食材','神秘食材＋A5和牛','神秘食材＋A5和牛＋媽媽滷蛋'][b]:'（還沒拿到，先去玩獎勵關）'}</div>`;}
+  if(L.bonus){}
+  else if(L.brothChoice)h+=`<div id="broths"><button data-b="mala"><b>麻辣鍋</b><span>煮得快 ×1.25｜香氣 ×1.45（困難）</span></button><button data-b="kombu"><b>昆布鍋</b><span>標準｜香氣 ×1.0（簡單）</span></button><button data-b="suan"><b>酸菜白肉鍋</b><span>×1.1｜香氣 ×1.2（普通）</span></button></div>`;
+  else h+=`<button id="goBtn">開始這一夜（鍋底：${L.pot==='yy'?'鴛鴦鍋・麻辣／大骨':BROTHS[L.broth].name}）</button>`;
+  el.innerHTML=h;
+  if(L.bonus)el.querySelectorAll('#broths button').forEach(b=>{b.addEventListener('click',()=>{chosenNb=b.dataset.n;startGame();});});
+  else if(L.brothChoice)el.querySelectorAll('#broths button').forEach(b=>{const k=b.dataset.b;
+    b.addEventListener('mouseenter',()=>{brothKey=k;broth=BROTHS[k];});b.addEventListener('focus',()=>{brothKey=k;broth=BROTHS[k];});
+    b.addEventListener('click',()=>{brothKey=k;broth=BROTHS[k];startGame();});});
+  else if($('goBtn'))$('goBtn').onclick=startGame;
+}
+$('unlockAll').onclick=()=>{allUnlocked=true;renderLevelList();};
+function startGame(){AC();level=selLevel;reset();$('bossbar').style.display='none';state='play';$('start').hidden=true;$('end').hidden=true;$('lvName').textContent=level.name;$('wasteBox').hidden=!level.mom;music.stop();music.play(level.bonus?'title':'battle',AC());}
+const ENDINGS={
+  he1:{title:'結局一【吃到飽的早晨】HE',text:'天亮了。陽光灑進來的那一刻，門外的殭屍一個接一個化成了灰。電視播報：「感染已全面消退。」\n小紫妹妹、阿強哥哥、夢姊姊互看一眼——「那……再煮一鍋？」\n從今天起，再也沒有人跟他們搶火鍋了。'},
+  he2:{title:'結局二【一起圍爐】HE',text:'天亮了。門外的殭屍沒有離開，而是安安靜靜地排起了隊……原來他們只是想要一碗熱湯。\n大家打開門，把桌子拉到走廊。那一天，人類和殭屍第一次一起圍爐。\n「……好……好吃……」'},
+  be:{title:'結局三【最後一鍋】BE',text:'門破了。\n幾天後，公寓裡多了幾個搖搖晃晃的身影，圍著一口早已乾掉的鍋子。冰箱是空的，鍋子是冷的。\n「……好……餓……」'},
+};
+function showEnding(kind){
+  endingType=kind;state='ending';$('bossbar').style.display='none';saveEnding(kind);held=null;
+  zombies=[];pot=[];parts=[];proj=[];angel=null;mom=null;
+  if(kind!=='be'){['meat','egg','ball','taro','cab','wagyu','crab','corn'].forEach((k,i)=>pot.push({type:k,slot:i,t:ING[k].cook+0.5,cook:ING[k].cook,mut:false,src:'pot'}));}
+  music.stop();if(kind==='be')music.jingle('lose',AC());else{music.jingle('win',AC());setTimeout(()=>{if(state==='ending')music.play('title',AC());},2600);}
+  const E=ENDINGS[kind];$('endTitle').textContent=E.title;
+  $('endStats').innerHTML=E.text.split('\n').join('<br>')+`<br><br><span style="color:#ffe066">結局收集 ${loadEndings().length}/3</span>`+(kind==='he1'?'<br><span style="color:#9a8fb0">提示：天亮時「殭屍好感」達到 12，會看到另一個結局</span>':'');
+  $('lb').innerHTML='';
+  const bt=$('endBtns');bt.innerHTML='';const mk=(txt,fn)=>{const b=document.createElement('button');b.className='btn';b.textContent=txt;b.onclick=fn;bt.appendChild(b);};
+  mk('再挑戰最終章',()=>{selLevel=level;startGame();});
+  const shareText=`我在《末日之夜：火鍋夜驚魂》看到了${E.title}！🍲🧟 #火鍋夜驚魂`;
+  const a=document.createElement('a');a.className='btn';a.textContent='分享到 X';a.style.textDecoration='none';a.target='_blank';a.rel='noopener';a.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText);bt.appendChild(a);
+  mk('關卡選單',()=>{music.play('title',AC());state='menu';$('end').hidden=true;$('start').hidden=false;renderLevelList();renderLevelInfo();});
+  $('end').hidden=false;$('end').style.alignItems='flex-end';
+}
+function drawEndingScene(t){
+  const be=endingType==='be';
+  CHARS.slice(0,3).forEach(c=>{const ch=be?Object.assign({},c,{skin:'#8fb37a',skinD:'#6d8f5a',eye:'#ff3b3b'}):c;drawChar(g,c.seat.x,c.seat.y+Math.round(Math.sin(t/650+c.off)),ch,be?'hungry':'happy',t);});
+  ell(g,TABLE.x,TABLE.y+5,TABLE.rx+1,TABLE.ry+1,K);ell(g,TABLE.x,TABLE.y+5,TABLE.rx,TABLE.ry,'#5e3a24');ell(g,TABLE.x,TABLE.y,TABLE.rx+1,TABLE.ry+1,K);ell(g,TABLE.x,TABLE.y,TABLE.rx,TABLE.ry,'#a06a42');
+  CHARS.slice(0,3).forEach(c=>drawBowl(c.bowl[0],c.bowl[1]));
+  if(be){ell(g,POT.x,POT.y,42,42,K);ell(g,POT.x,POT.y,40,40,'#5a5a62');ell(g,POT.x,POT.y,34,34,'#2a2420');R(g,POT.x-14,POT.y-4,12,1,'#4a3a30');R(g,POT.x+4,POT.y+8,10,1,'#4a3a30');R(g,POT.x-2,POT.y-10,1,9,'#4a3a30');
+    for(let i=0;i<3;i++){const a=t/300+i*2;R(g,POT.x+Math.cos(a)*20,POT.y-30+Math.sin(a*1.3)*6,1,1,K);}
+    g.fillStyle='rgba(60,0,10,0.35)';g.fillRect(0,0,W,H);
+    for(let i=0;i<3;i++){drawZombie({x:420+i*18,y:120+i*30,ph:i,hp:1,max:1,dead:0,type:'norm',poison:0,slow:0,confuse:0,distract:0},t);}
+  }else{
+    drawPot(t,null);for(const o of pot){const[p,q]=slotPos(o,t);drawIng(g,o.type,p,q,ING[o.type].ok,'ok',t);}
+    if(endingType==='he2'){[[140,232],[240,234],[300,196]].forEach(([x,y],i)=>{drawZombie({x,y:y-22,ph:i,hp:1,max:1,dead:0,type:i===2?'picky':'norm',hate:'cil',flee:false,poison:0,slow:0,confuse:0,distract:0},t);ell(g,x,y+8,6,3,'#f3efe6');const b=((t/400+i)|0)%2;R(g,x-2,y-34-b,2,2,'#ff6aa8');R(g,x+1,y-34-b,2,2,'#ff6aa8');R(g,x-1,y-32-b,3,2,'#ff6aa8');});}
+    else{if(Math.random()<0.5)parts.push({x:Math.random()*W,y:-2,vx:(Math.random()-0.5)*10,vy:30+Math.random()*20,l:3,col:pick(['#ffe066','#ff6aa8','#6dff7a','#9fd3ff']),sz:2});}
+  }
+}
+function endGame(win){
+  $('end').style.alignItems='';
+  if(level.ending){if(win)saveProgress(level.id);lastEntry={id:Date.now()+''+Math.random(),n:getName(),s:score,w:win?1:0};lbAdd(level.id,lastEntry);showEnding(!win?'be':friendship>=level.friend?'he2':'he1');return;}
+  state='end';held=null;angel=null;music.jingle(win?'win':'lose',AC());$('bossbar').style.display='none';
+  if(win)saveProgress(level.id);
+  lastEntry={id:Date.now()+''+Math.random(),n:getName(),s:score,w:win?1:0};lbAdd(level.id,lastEntry);
+  const next=LEVELS[level.id];
+  let stars=0;if(level.bonus){stars=stats.perfect>=55?3:stats.perfect>=40?2:stats.perfect>=25?1:0;saveBonus(stars);}
+  $('endTitle').textContent=level.bonus?`派對結束！${'★'.repeat(stars)||'（沒有星星）'}`:win?'天亮了！'+level.name+' 過關':'門被攻破了……（但大家都吃得很飽）';
+  const lines=level.bonus?[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次（★25／★★40／★★★55）`,`一起吃火鍋的鄰居：${CHARS[3].name}`,`獎勵關最高紀錄：${'★'.repeat(loadBonus())||'無'} → 第六夜起開局加成`]:[`分數：<b>${score}</b>｜完美上菜 ${stats.perfect} 次｜最高連擊 ${stats.bestCombo}`,`擊退殭屍 ${stats.kills} 隻${stats.picky?`（嚇跑挑食殭屍 ${stats.picky} 隻）`:''}｜天使外送 ${stats.angel} 次`,`神秘食材 ${stats.mystery} 個｜變異食材攻擊 ${stats.mutHit} 次`];
+  if(stats.nb&&!level.bonus)lines.push(`今晚的鄰居：${stats.nb}${stats.cat?'（吃飽後發動了夜之爪）':''}${stats.couple?'（帶走了 '+stats.couple+' 隻殭屍）':''}`);
+  if(level.mom)lines.push(`浪費 ${stats.waste} 次｜媽媽出動 ${stats.mom} 次｜吃到媽媽滷蛋 ${stats.momegg} 顆`);
+  if(level.boss)lines.push(stats.boss?`打倒 BOSS：${level.boss.name}！`:`BOSS ${level.boss.name}：${bossDone?'被陽光逼退了':'沒有打倒'}`);
+  $('endStats').innerHTML=lines.join('<br>');
+  renderLB(level.id);
+  const bt=$('endBtns');bt.innerHTML='';
+  const mk=(txt,fn)=>{const b=document.createElement('button');b.className='btn';b.textContent=txt;b.onclick=fn;bt.appendChild(b);};
+  if(win&&next)mk((next.bonus?'前往：':next.ending?'最終章：':'下一夜：')+next.name,()=>{selLevel=next;startGame();});
+  mk('再玩一次',()=>{startGame();});
+  const shareText=`我在《末日之夜：火鍋夜驚魂》${level.name}${win?'撐到天亮了':'被殭屍攻破了'}！分數 ${score} 分🍲🧟 #火鍋夜驚魂`;
+  mk('複製成績',async()=>{try{await navigator.clipboard.writeText(shareText);pop(240,135,'已複製！','#6dff7a',true);}catch(e){pop(240,135,'無法複製，請手動選取文字','#ff9a9a');}});
+  const a=document.createElement('a');a.className='btn';a.textContent='分享到 X';a.style.textDecoration='none';a.target='_blank';a.rel='noopener';a.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText);bt.appendChild(a);
+  mk('關卡選單',()=>{music.play('title',AC());state='menu';$('end').hidden=true;$('start').hidden=false;selLevel=win&&next?next:level;renderLevelList();renderLevelInfo();});
+  $('end').hidden=false;
+}
+
+// ---------- spawning ----------
+function spawnZombie(kind){
+  const prog=gameT/DUR;let type=kind||'norm';
+  if(!kind){if(level.picky&&prog>0.15&&Math.random()<level.picky)type='picky';else if(prog>0.2&&Math.random()<0.3)type='rider';}
+  const hp=(type==='rider'?CFG.riderHp:CFG.zHp)*(type==='picky'?1.2:1)+CFG.zHpGrow*prog;
+  const z={x:492,y:96+Math.random()*80,ty:104+Math.random()*44,hp,max:hp,sp:type==='rider'?30:12+Math.random()*4,type,atDoor:false,poison:0,distract:0,slow:0,confuse:0,dead:0,ph:Math.random()*6};
+  if(type==='picky'){const opts=['cil','fen','cab'].filter(k=>plates.includes(k)&&stock[k]>0);z.hate=opts.length?pick(opts):'cab';z.sp=11;}
+  zombies.push(z);return z;
+}
+function spawnBoss(){
+  const B=level.boss;const z={x:500,y:104,ty:106,hp:B.hp,max:B.hp,sp:7,type:'boss',atDoor:false,poison:0,distract:0,slow:0,confuse:0,dead:0,ph:0,phase:1,stealT:9,name:B.name};
+  zombies.push(z);boss=z;sfx.roar();music.sting();flashT=0.25;
+  pop(300,70,`BOSS 出現：${B.name}！`,'#ff6a6a',true);$('bossbar').style.display='block';$('bossName').textContent=B.name;
+}
+function bossSteal(z){
+  const cand=pot.filter(o=>stOf(o)!=='mut').sort((a,b)=>(stOf(b)==='ok')-(stOf(a)==='ok')||b.t-a.t);
+  if(cand.length){const o=cand[0];const[p,q]=slotPos(o,performance.now());pot.splice(pot.indexOf(o),1);z.hp=Math.min(z.max,z.hp+35);
+    steals.push({x:p,y:q,tx:z.x-10,ty:z.y+14,k:0,type:o.type});sfx.slurp();pop(p,q-14,`${z.name}把${ING[o.type].name}吸走了！`,'#ff9a9a',true);}
+  else{sfx.roar();pop(z.x-20,z.y-16,'鍋子空了？！小弟們上！','#ff6a6a',true);for(let i=0;i<2;i++)spawnZombie('norm');}
+}
+
+// ---------- update ----------
+function update(dt,t){
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.92;p.vy*=0.92;p.l-=dt;if(p.l<=0)parts.splice(i,1);}
+  const sr=state==='play'?aroma()*0.25:0.35;
+  if(Math.random()<sr){const a=Math.random()*6.28,d=Math.random()*28;steam.push({x:POT.x+Math.cos(a)*d,y:POT.y+Math.sin(a)*d,l:1,s:Math.random()*6});}
+  for(let i=steam.length-1;i>=0;i--){const p=steam[i];p.y-=10*dt;p.x+=Math.sin((p.y+p.s)/6)*0.15;p.l-=dt*0.45;if(p.l<=0)steam.splice(i,1);}
+  for(let i=steals.length-1;i>=0;i--){const s=steals[i];s.k+=dt*2;if(s.k>=1)steals.splice(i,1);}
+  if(flashT>0)flashT-=dt;if(fridgeOpen>0)fridgeOpen-=dt;
+  if(state==='ending'){for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt;if(p.l<=0||p.y>H)parts.splice(i,1);}return;}
+  if(state!=='play')return;
+  gameT+=dt;const prog=gameT/DUR;
+  if(fridgeCD>0)fridgeCD-=dt;
+  updateMom(dt);
+  const BON=level.bonus;
+  const heatMul=scolding()?0.25:1;
+  for(let i=pot.length-1;i>=0;i--){
+    const o=pot[i];o.t+=dt*speedOf(o)*heatMul;
+    if(!o.rolled&&o.t>=o.cook&&(o.type==='taro'||o.type==='cil'||o.type==='fen')){o.rolled=true;const ch=o.type==='taro'?CFG.poison:o.type==='cil'?CFG.mutCil:CFG.mutFen;
+      if(Math.random()<ch){o.mut=true;const[p,q]=slotPos(o,t);const col=o.type==='taro'?'#8a4bff':o.type==='cil'?'#9dff3b':'#ffe066';burst(p,q,26,col,30);pop(p,q-14,`${ING[o.type].name}變成${MUT_NAME[o.type]}了……？！`,col);sfx.poison();}}
+    if(o.mut&&Math.random()<0.15){const[p,q]=slotPos(o,t);parts.push({x:p+Math.random()*8-4,y:q+Math.random()*8-4,vx:0,vy:-6,l:0.4,col:o.type==='taro'?'#b46bff':o.type==='cil'?'#9dff3b':'#ffe066',sz:1});}
+    if(level.mom&&!o.mut&&o.t>o.cook+winOf(o)+CFG.burnT){const[p,q]=slotPos(o,t);pot.splice(i,1);burst(p,q,14,'#333',18);addWaste(p,q-12,`${ING[o.type].name}焦掉了！`);}
+  }
+  active().forEach(c=>{
+    if(c.stun>0){c.stun-=dt;if(c.stun<=0){const p=charPos(c);pop(p.x,p.y-12,'活過來了！','#ffe9b0');}}
+    if(c.moodT>0)c.moodT-=dt;
+    if(c.debuff){c.debuff.t-=dt;if(c.debuff.t<=0)c.debuff=null;}
+    const sleepy=c.debuff&&c.debuff.type==='sleepy'?2:1;
+    c.sat=Math.max(0,c.sat-dt*(c.kind==='cat'?(BON?1.2:0.15):(c.guard?CFG.drainGuard:CFG.drainTable)*(c.hungry||1)*sleepy*(BON?2.4:1)));
+    if(c.guard&&c.sat<=0){const p=charPos(c);c.guard=false;c.spot=-1;pop(p.x,p.y-12,'餓到沒力了……','#ff9a9a');}
+    if(c.kind==='couple'){c.stealT-=dt;if(c.stealT<=0){c.stealT=12;if(c.sat<60&&!scolding())coupleSteal(c);}}
+    if(c.nb==='sword'&&!c.guard&&c.stun<=0&&!scolding()){c.swordT-=dt;if(c.swordT<=0){c.swordT=14;swordServe(c);}}
+    if(c.nb==='volley'&&c.guard){c.spikeT-=dt;if(c.spikeT<=0){c.spikeT=4;if(Math.random()<0.4)spike(c);}}
+    if(c.nb==='staff'&&!c.guard&&c.stun<=0){c.soupT-=dt;if(c.soupT<=0){c.soupT=55;soupBuff=30;sfx.chime();burst(POT.x,POT.y,30,'#ffe066',30);pop(POT.x,POT.y-50,'店員：「幫您加湯～」30 秒內煮更快、更營養！','#ffe066',true);}}
+  });
+  if(!knock.nextAt)knock.nextAt=DUR*0.33;
+  if(!level.bonus&&knock.state==='none'&&knock.count<2&&gameT>=knock.nextAt&&!CHARS[3].active){if(knock.pending){applyNeighbor(knock.pending);knock.pending=null;}knock.count++;knock.state='active';knock.t=12;pop(300,108,(knock.count>1?'又有人來敲門了……':'')+CHARS[3].knockText,'#ffe066',true);[0,.35,.7].forEach(d=>setTimeout(sfx.thud,d*1000));}
+  if(knock.state==='active'){knock.t-=dt;if(knock.t<=0){knock.state='done';pop(330,108,CHARS[3].name+'離開了……','#ff9a9a');neighborLeft();}}
+  if(soupBuff>0)soupBuff-=dt;if(slashT>0)slashT-=dt;
+  if(coupleOut){coupleOut.x+=55*dt;if(coupleOut.x>500)coupleOut=null;}
+  if(!BON&&!angel&&killsSinceAngel>=CFG.angelKills+stats.angel*4)spawnAngel();
+  if(angel){
+    if(angel.phase==='down'){angel.y+=140*dt;if(angel.y>=176){angel.y=176;angel.phase='wait';pop(angel.x,angel.y-14,'請簽收～','#fff6c8');}}
+    else if(angel.phase==='wait'){angel.t-=dt;if(angel.t<=0){angel.phase='up';pop(angel.x,angel.y-14,'沒人簽收，飛走了……','#ff9a9a');}}
+    else{angel.y-=160*dt;if(angel.y<-60)angel=null;}
+  }
+  if(level.boss&&!boss&&!bossDone&&prog>=level.boss.at)spawnBoss();
+  if(waveIdx<level.waves.length&&prog>=level.waves[waveIdx][0]){waveLeft=level.waves[waveIdx][1];waveT=0;waveIdx++;
+    pop(300,70,waveIdx===level.waves.length?'天快亮了，最後一波殭屍潮！':'殭屍潮來了！','#ff6a6a',true);music.sting();}
+  if(waveLeft>0){waveT-=dt;if(waveT<=0){spawnZombie();waveLeft--;waveT=0.7;}}
+  const near0=zombies.filter(z=>!z.dead&&!z.flee&&z.x<=CFG.guardRange);
+  const gN=CHARS.filter(c=>c.active&&c.guard).length;
+  if(gN&&!near0.some(z=>z.atDoor)&&doorHP<100){doorHP=Math.min(100,doorHP+CFG.repair*gN*dt);if(Math.random()<dt*0.6)burst(386,130+Math.random()*30,3,'#e0b84a',10);}
+  const fast=prog>=level.fastAt;if(fast&&!fastSaid&&level.id>1){fastSaid=true;pop(240,60,'夜更深了……節奏越來越快！','#ffb0b0',true);}
+  music.setIntensity((fast||waveLeft>0||near0.length>=3||doorHP<35||boss)?2:(zombies.length>=2?1:0),fast?level.fastMul:1);
+  spawnT-=dt;if(!BON&&spawnT<=0){spawnZombie();spawnT=Math.max(CFG.spawnMin,CFG.spawnBase/(aroma()*(CFG.spawnEarly+prog*CFG.spawnGrow)))*(boss?1.35:1)/(level.spawnMul||1);}
+  let nDoor=0;
+  for(let i=zombies.length-1;i>=0;i--){
+    const z=zombies[i];
+    if(z.dead>0){z.dead-=dt;if(z.dead<=0)zombies.splice(i,1);continue;}
+    if(z.flee){z.x+=60*dt;if(z.x>500)zombies.splice(i,1);continue;}
+    if(z.poison>0){z.poison-=dt;z.hp-=8*dt;}
+    if(z.slow>0)z.slow-=dt;
+    if(z.hp<=0){
+      if(z.type==='boss'){z.dead=1.2;boss=null;bossDone=true;stats.boss=true;stats.kills++;score+=300;tray.mystery++;tray.wagyu+=2;flashT=0.6;sfx.boom();music.sting();
+        $('bossbar').style.display='none';burst(z.x,z.y+20,60,'#ffe066',50);pop(300,80,`打倒了${z.name}！獲得神秘食材、A5和牛 ×2`,'#ffe066',true);continue;}
+      z.dead=0.5;stats.kills++;killsSinceAngel++;score+=10;pop(z.x,z.y-6,'+10','#9fd3ff');burst(z.x,z.y+12,12,'#6d8f5a',25);
+      if(Math.random()<0.22)setTimeout(()=>{if(state==='play')giveIngredient(z.x-20,z.y+30,'殭屍掉了：',0.5);},300);
+      continue;
+    }
+    if(z.distract>0){z.distract-=dt;continue;}
+    const spd=z.sp*(z.slow>0?0.4:1);
+    if(z.confuse>0){z.confuse-=dt;z.atDoor=false;z.x=Math.min(480,z.x+spd*1.3*dt);continue;}
+    if(z.type==='boss'){
+      if(z.phase===1&&z.hp<z.max/2){z.phase=2;z.sp=10;sfx.roar();flashT=0.3;pop(300,80,`${z.name}暴走了！`,'#ff6a6a',true);for(let k=0;k<3;k++)spawnZombie(level.boss.pickyMinions?'picky':'norm');}
+      z.stealT-=dt;if(z.stealT<=0&&z.x<450){bossSteal(z);z.stealT=z.phase===2?9:12;}
+    }
+    if(!z.atDoor){
+      z.x-=spd*dt;z.y+=(z.ty-z.y)*Math.min(1,dt*1.5);
+      const front=z.type==='boss'?418:406+Math.min(28,nDoor*5);
+      if(z.x<=front){z.x=front;z.atDoor=true;}
+    }else{nDoor++;const dmg=z.type==='boss'?CFG.bossDmg*(z.phase===2?1.4:1):z.type==='rider'?CFG.riderDmg:CFG.doorDmg;doorHP-=dmg*(z.slow>0?0.5:1)*(CHARS.some(c=>c.active&&c.guard&&c.defense)?0.6:1)*dt;if(Math.random()<dt*0.8)sfx.thud();}
+  }
+  const dz=zombies.filter(z=>!z.dead&&!z.flee&&z.x<=CFG.guardRange).sort((a,b)=>a.x-b.x);
+  const aura=mom&&mom.phase==='watch'?1.2:1;
+  CHARS.filter(c=>c.active&&c.guard).forEach((c,i)=>{
+    if(!dz.length)return;const z=dz[i%dz.length];const sleepy=c.debuff&&c.debuff.type==='sleepy'?0.5:1;
+    z.hp-=(CFG.guardBase+c.sat*CFG.guardSat)*(c.power||1)*sleepy*aura*(z.type==='picky'?CFG.pickyArmor:1)*dt;
+    if(Math.random()<dt*3){burst(z.x-8,z.y+10,3,z.type==='picky'?'#ffd0e4':'#ffffff',15);sfx.hit();}
+  });
+  for(let i=balls.length-1;i>=0;i--){balls[i].k+=dt*3;if(balls[i].k>=1)balls.splice(i,1);}
+  for(let i=proj.length-1;i>=0;i--){const p=proj[i];p.k+=dt/0.45;if(p.k>=1){land(p);proj.splice(i,1);}}
+  if(doorHP<=0){doorHP=0;endGame(false);}
+  else if(gameT>=DUR){if(boss){bossDone=true;pop(300,80,'陽光照進來了，BOSS 撤退了！','#ffe066',true);}endGame(true);}
+}
+
+// ---------- render ----------
+function render(t){
+  drawRoom(t);
+  if(state==='ending'){drawEndingScene(t);for(const p of parts){g.fillStyle=p.col;g.fillRect(Math.round(p.x),Math.round(p.y),p.sz,p.sz);}if(isDay()){g.fillStyle='rgba(255,240,200,0.10)';g.fillRect(0,0,W,H);}return;}
+  const hover=hoverTarget(t);
+  active().forEach(c=>{if(!c.guard)drawAny(c,c.seat.x,c.seat.y+Math.round(Math.sin(t/650+c.off)*0.6),c.kind==='cat'?(c.moodT>0?c.mood:'normal'):scolding()?'shock':moodOf(c),t);});
+  ell(g,TABLE.x+3,TABLE.y+10,TABLE.rx+2,TABLE.ry,'rgba(0,0,0,.35)');
+  ell(g,TABLE.x,TABLE.y+5,TABLE.rx+1,TABLE.ry+1,K);ell(g,TABLE.x,TABLE.y+5,TABLE.rx,TABLE.ry,'#5e3a24');
+  ell(g,TABLE.x,TABLE.y,TABLE.rx+1,TABLE.ry+1,K);ell(g,TABLE.x,TABLE.y,TABLE.rx,TABLE.ry,'#a06a42');
+  ell(g,TABLE.x,TABLE.y,TABLE.rx-6,TABLE.ry-5,'#a8724a');ell(g,TABLE.x,TABLE.y,TABLE.rx-8,TABLE.ry-7,'#a06a42');
+  for(let i=0;i<5;i++)R(g,TABLE.x-70+i*30,TABLE.y-50+((i*17)%30),12,1,'#b07a52');
+  active().forEach(c=>drawBowl(c.bowl[0],c.bowl[1]));
+  drawPot(t,typeof hover==='string'&&hover.startsWith('side')?hover.slice(4):null);
+  for(const o of pot){
+    const[p,q]=slotPos(o,t),s=stOf(o);
+    if(hover===o)ell(g,p,q,8,8,'#ffe066');else ell(g,p+1,q+1,6,5,'rgba(0,0,0,.28)');
+    drawIng(g,o.type,p,q,ingColor(o),s,t);
+    if(s!=='mut'){
+      const w=10,bx=Math.round(p-5),by=Math.round(q-9);R(g,bx-1,by-1,w+2,4,K);
+      if(s==='raw')R(g,bx,by,Math.max(1,Math.round(w*o.t/o.cook)),2,'#ffcf3b');
+      else if(s==='ok')R(g,bx,by,w,2,((t/200)|0)%2?'#6dff7a':'#3fbf5a');
+      else{R(g,bx,by,w,2,'#e74c3c');if(level.mom&&o.t>o.cook+winOf(o)+CFG.burnT-2&&((t/120)|0)%2)ell(g,p,q,7,7,'rgba(40,20,20,.45)');}
+    }
+  }
+  PLATE_POS.forEach((_,i)=>drawPlate(i,t,hover==='p'+i));
+  drawTray(t,hover);
+  for(const p of parts)if(p.pot){g.fillStyle=p.col;g.fillRect(Math.round(p.x),Math.round(p.y),p.sz,p.sz);}
+  if(mom)drawMom(t);
+  CHARS.filter(c=>c.active&&c.guard).sort((a,b)=>a.spot-b.spot).forEach(c=>{const p=GUARD_SPOTS[c.spot];drawAny(c,p.x,p.y,moodOf(c),t);if(c.kind!=='kiwi')drawGuardWeapon(p,t,c);});
+  for(const b of balls){const x=b.x+(b.tx-b.x)*b.k,y=b.y+(b.ty-b.y)*b.k-Math.sin(Math.PI*b.k)*16;ell(g,x,y,3,3,K);ell(g,x,y,2,2,'#fff');R(g,x-1,y,3,1,'#2a7ad8');}
+  zombies.filter(z=>z.type!=='boss').sort((a,b)=>a.y-b.y).forEach(z=>drawZombie(z,t));zombies.filter(z=>z.type==='boss').forEach(z=>drawBoss(z,t));
+  for(const s of steals){const x=s.x+(s.tx-s.x)*s.k,y=s.y+(s.ty-s.y)*s.k-Math.sin(Math.PI*s.k)*20;drawIng(g,s.type,x,y,ING[s.type].ok,'ok',t);}
+  if(coupleOut){const x=Math.round(coupleOut.x),y=coupleOut.y;drawAny(CHARS[3],x,y,'happy',t);}
+  if(slashT>0){g.globalAlpha=Math.min(1,slashT*2);for(let i=0;i<4;i++){const ox=396+i*22,oy=40+((i*37)%60);for(let k=0;k<60;k++)R(g,ox+k*0.9-20,oy+k*2.6,2,2,i%2?'#ffffff':'#ffe066');}g.globalAlpha=1;}
+  if(knock.state==='active'){const bo=CHARS[3],bx=430,by=176+Math.round(Math.sin(t/150));drawAny(bo,bx,by,'shock',t);R(g,bx+8,by-16,9,12,K);R(g,bx+9,by-15,7,10,'#fff');R(g,bx+11,by-14,3,5,'#c0392b');R(g,bx+11,by-8,3,2,'#c0392b');}
+  active().forEach(c=>{
+    const p=charPos(c),bx=p.x-11,by=p.y-11;
+    if(hover===c){R(g,p.x-16,p.y-7,33,1,'#ffe066');R(g,p.x-16,p.y+37,33,1,'#ffe066');R(g,p.x-16,p.y-7,1,45,'#ffe066');R(g,p.x+16,p.y-7,1,45,'#ffe066');}
+    R(g,bx-1,by-1,24,4,K);R(g,bx,by,Math.round(22*c.sat/100),2,c.sat<20?'#e74c3c':'#ffcf3b');
+    if(c.stun>0)R(g,bx,by+3,Math.round(22*c.stun/7),1,'#b46bff');
+    if(c.debuff){const col=c.debuff.type==='taste'?'#9dff3b':'#a0c0ff';R(g,bx,by+3,Math.round(22*c.debuff.t/12),1,col);
+      if(c.debuff.type==='sleepy'){const k=((t/400)|0)%3;R(g,p.x+12+k,p.y-4-k*3,3,1,'#fff');R(g,p.x+14+k,p.y-3-k*3,1,1,'#fff');R(g,p.x+12+k,p.y-2-k*3,3,1,'#fff');}
+      else{const a=t/150;R(g,p.x+Math.cos(a)*9,p.y-2+Math.sin(a)*2,2,2,'#9dff3b');}}
+  });
+  if(hover==='fridge'){R(g,FRIDGE.x-2,FRIDGE.y-1,FRIDGE.w+4,1,'#ffe066');R(g,FRIDGE.x-2,FRIDGE.y+FRIDGE.h,FRIDGE.w+4,1,'#ffe066');}
+  for(const p of steam){g.fillStyle=`rgba(245,240,235,${p.l*0.35})`;const s=p.l<0.5?2:1;g.fillRect(Math.round(p.x),Math.round(p.y),s,s);}
+  if(angel)drawAngel(t);
+  for(const p of proj){const x=p.sx+(p.tx-p.sx)*p.k,y=p.sy+(p.ty-p.sy)*p.k-Math.sin(Math.PI*p.k)*34;drawIng(g,p.o.type,x,y,ingColor(p.o)||'#fff',stOf(p.o),t);}
+  for(const p of parts)if(!p.pot){g.fillStyle=p.col;g.globalAlpha=Math.min(1,p.l*2);g.fillRect(Math.round(p.x),Math.round(p.y),p.sz,p.sz);}
+  g.globalAlpha=1;
+  if(isDay()){g.fillStyle='rgba(255,240,200,0.10)';g.fillRect(0,0,W,H);}else{
+  const gr=g.createRadialGradient(POT.x,POT.y,10,POT.x,POT.y,300);
+  gr.addColorStop(0,'rgba(255,170,80,0.16)');gr.addColorStop(0.45,'rgba(40,20,60,0.06)');gr.addColorStop(1,'rgba(8,4,20,0.5)');
+  g.fillStyle=gr;g.fillRect(0,0,W,H);
+  R(g,392,0,80,H,'rgba(5,5,25,0.25)');}
+  const sl=g.createRadialGradient(450,40,2,450,40,70);sl.addColorStop(0,'rgba(255,230,160,0.22)');sl.addColorStop(1,'rgba(255,230,160,0)');g.fillStyle=sl;g.fillRect(392,0,88,120);
+  if(boss&&boss.phase===2&&((t/300)|0)%2){g.fillStyle='rgba(255,30,30,0.05)';g.fillRect(0,0,W,H);}
+  if(flashT>0){g.fillStyle=`rgba(255,236,150,${flashT})`;g.fillRect(0,0,W,H);}
+  if(held){ell(g,mx+2,my+5,5,2,'rgba(0,0,0,.4)');drawIng(g,held.type,mx,my,ingColor(held)||'#fff',stOf(held),t);
+    if(inThrow(mx))R(g,mx-8,my-14,17,1,'#ffcf6b');}
+}
+
+function updateDOM(){
+  labelsEl.style.display=state==='ending'?'none':'';
+  const hr=level.bonus?12+Math.min(gameT,DUR)/DUR*1.5:18+Math.min(gameT,DUR)/DUR*12,h=Math.floor(hr)%24,m=Math.floor((hr%1)*60/10)*10;
+  $('time').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  $('doorbar').style.width=Math.max(0,doorHP)+'%';$('doorbar').style.background=doorHP<33?'#e74c3c':doorHP<66?'#f0b43c':'#3fbf5a';
+  $('aromabar').style.width=Math.min(100,aroma()/3.4*100)+'%';
+  $('score').textContent=score;
+  const cs='★'.repeat(combo)+'☆'.repeat(CFG.combo-combo);if($('combo').textContent!==cs)$('combo').textContent=cs;
+  $('waste').textContent=mom?(mom.phase==='watch'?'媽媽盯場中':'媽媽來了'):wasteN+'/'+CFG.wasteMax;
+  $('friendBox').hidden=!level.ending;if(level.ending)$('friend').textContent=friendship+'/'+level.friend;
+  $('soupBox').hidden=!(soupBuff>0);if(soupBuff>0)$('soup').textContent=Math.ceil(soupBuff);
+  if(boss)$('bossHp').style.width=Math.max(0,boss.hp/boss.max*100)+'%';
+  PLATE_POS.forEach((_,i)=>{const k=plates[i];const s=k?(stock[k]>0?ING[k].name+' ×'+stock[k]:ING[k].name+'（空）'):'';if(plateLbl[i].textContent!==s)plateLbl[i].textContent=s;});
+  for(const k in TRAY_POS){const s=tray[k]>0?({mystery:'福丸',momegg:'滷蛋',drink:'冰飲'}[k]||ING[k].name)+'×'+tray[k]:'';if(trayLbl[k].textContent!==s)trayLbl[k].textContent=s;}
+  const fs=state==='play'?(fridgeCD>0?'冰箱 '+Math.ceil(fridgeCD)+'s':'冰箱 可搜刮！'):'冰箱';if(fridgeLbl.textContent!==fs)fridgeLbl.textContent=fs;
+  CHARS.forEach((c,i)=>{const d=charLbl[i];if(!c.active){d.textContent='';return;}const p=charPos(c);d.style.left=(p.x/W*100)+'%';d.style.top=((p.y-21)/H*100)+'%';
+    const tag=c.kind==='cat'?'（餵飽度）':level.plates.includes('cil')?(c.cil?'🌿':'✖🌿'):'';
+    const s=c.name+tag+(c.guard?'（守門）':c.stun>0?'（中毒）':c.debuff?(c.debuff.type==='taste'?'（味覺錯亂）':'（想睡）'):'');if(d.textContent!==s)d.textContent=s;});
+  if(mom){momLbl.style.left=(mom.x/W*100)+'%';momLbl.style.top=((mom.y-21)/H*100)+'%';if(momLbl.textContent!=='媽媽')momLbl.textContent='媽媽';}else if(momLbl.textContent)momLbl.textContent='';
+}
+
+reset();renderLevelList();renderLevelInfo();
+let last=performance.now();
+function loop(t){const dt=Math.min(0.05,(t-last)/1000);last=t;update(dt,t);render(t);updateDOM();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
