@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>凜界異聞錄｜尋找失蹤的羅賓</title>
+<meta name="description" content="RiN凜 三週年企劃・互動小品《凜界異聞錄｜尋找失蹤的羅賓》">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- 標題 -->
+  <section id="scr-title" class="screen">
+    <div class="bg" id="title-bg"></div>
+    <div class="stars"></div>
+    <div class="title-box">
+      <img id="title-logo" alt="">
+      <div id="title-text">
+        <h1 id="t-title"></h1>
+        <p class="sub" id="t-sub"></p>
+      </div>
+      <p class="tag" id="t-tag"></p>
+      <button class="btn big" id="btn-start">開始旅程</button>
+      <button class="btn ghost" id="btn-reset-open">重新開始</button>
+    </div>
+  </section>
+
+  <!-- 旅途地圖 -->
+  <section id="scr-map" class="screen">
+    <div class="bg map-bg"></div>
+    <header class="topbar">
+      <button class="icon" id="map-home" aria-label="回標題">⌂</button>
+      <span class="top-title">旅途地圖</span>
+      <span class="spacer"></span>
+      <button class="icon" data-open="notebook" aria-label="線索手帳">📜</button>
+      <button class="icon" data-open="settings" aria-label="設定">⚙</button>
+    </header>
+    <div class="paw-count" id="paw-count"></div>
+    <ol class="act-list" id="act-list"></ol>
+    <div class="finale-card" id="finale-card"></div>
+  </section>
+
+  <!-- 遊戲 -->
+  <section id="scr-play" class="screen">
+    <div class="bg" id="play-bg"></div>
+    <div class="stage">
+      <div class="stand left" id="stand-left"></div>
+      <div class="stand right" id="stand-right"></div>
+    </div>
+    <button class="paw-egg" id="paw-egg" aria-label="爪印"></button>
+    <header class="topbar">
+      <button class="icon" id="play-back" aria-label="回地圖">←</button>
+      <span class="top-title" id="act-label"></span>
+      <span class="spacer"></span>
+      <button class="icon" id="btn-log" aria-label="對話紀錄">☰</button>
+      <button class="icon" data-open="notebook" aria-label="線索手帳">📜</button>
+      <button class="icon" data-open="settings" aria-label="設定">⚙</button>
+    </header>
+    <div class="dialog" id="dialog">
+      <div class="nametag" id="nametag"></div>
+      <div class="text" id="text"></div>
+      <div class="next" id="next">▼</div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- 覆蓋層 -->
+  <div class="overlay" id="ov"><div class="panel" id="ov-panel"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<!-- 資料（可自由編輯）-->
+<script src="data/settings.js"></script>
+<script src="data/assets.js"></script>
+<script src="data/acts/act1.js"></script>
+<script src="data/acts/act2.js"></script>
+<script src="data/acts/act3.js"></script>
+<script src="data/acts/act4.js"></script>
+<script src="data/acts/act5.js"></script>
+<script src="data/acts/act6.js"></script>
+<script src="data/acts/act7.js"></script>
+<script src="data/acts/act8.js"></script>
+<!-- 程式（一般不用改）-->
+<script src="js/audio.js"></script>
+<script src="js/puzzles.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>素材檢查｜凜界異聞錄</title>
+<style>
+  body { margin: 0; padding: 20px; background: #120d2a; color: #f4eefc; font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  p.note { color: #b9add6; font-size: .9rem; margin: 0 0 18px; }
+  .sum { font-size: 1.1rem; margin-bottom: 16px; }
+  h2 { font-size: 1rem; color: #f2d38a; margin: 22px 0 8px; border-bottom: 1px solid #f2d38a44; padding-bottom: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .it { background: #ffffff0d; border: 1px solid #ffffff1a; border-radius: 10px; padding: 8px; font-size: .78rem; word-break: break-all; }
+  .it.ok { border-color: #8fe3b5aa; } .it.no { border-color: #ff8fa366; opacity: .75; }
+  .it .pv { height: 90px; display: grid; place-items: center; background: #0006; border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+  .it .pv img { max-width: 100%; max-height: 100%; }
+  .it b { display: block; margin-bottom: 2px; }
+  .st { float: right; }
+  audio { width: 100%; height: 30px; }
+</style>
+</head>
+<body>
+<h1>素材檢查</h1>
+<p class="note">列出 data/assets.js 裡所有素材。✅＝已放好，❌＝還沒放（遊戲會用預設樣式或靜音，不會壞）。<br>換完素材後重新整理這頁即可確認。</p>
+<div class="sum" id="sum"></div>
+<div id="out"></div>
+<script src="data/settings.js"></script>
+<script src="data/assets.js"></script>
+<script>
+const out = document.getElementById("out"), groups = [];
+const label = { title: "標題畫面", char: "立繪", act: "各幕背景／BGM", clue: "線索卡 ICON", ui: "介面", sfx: "音效" };
+const names = Object.assign({}, ...Object.entries(SETTINGS.characters).map(([k, v]) => ({ [k]: v.name })));
+function walk(obj, prefix, list) {
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof v === "string") list.push({ key: prefix ? prefix + "." + k : k, src: v });
+    else walk(v, prefix ? prefix + "." + k : k, list);
+  }
+}
+let ok = 0, total = 0;
+for (const [g, obj] of Object.entries(ASSETS)) {
+  const list = []; walk(obj, "", list);
+  out.insertAdjacentHTML("beforeend", `<h2>${label[g] || g}</h2>`);
+  const grid = document.createElement("div"); grid.className = "grid"; out.appendChild(grid);
+  list.forEach(({ key, src }) => {
+    total++;
+    const el = document.createElement("div"); el.className = "it";
+    const isAudio = /\.(mp3|ogg|wav|m4a)$/i.test(src);
+    const title = (g === "char" ? names[key] + "　" : g === "act" ? "第" + key.replace(".", " 幕 ") + "　" : "") ;
+    el.innerHTML = `<div class="pv">…</div><b>${title}<span class="st">⏳</span></b>${src}`;
+    grid.appendChild(el);
+    const done = good => {
+      el.classList.add(good ? "ok" : "no"); el.querySelector(".st").textContent = good ? "✅" : "❌";
+      if (good) ok++; document.getElementById("sum").textContent = `已放好 ${ok}／${total} 個素材`;
+      if (!good) el.querySelector(".pv").textContent = "未放入";
+    };
+    if (isAudio) {
+      const a = new Audio(); a.preload = "metadata";
+      a.onloadedmetadata = () => { el.querySelector(".pv").innerHTML = ""; const c = document.createElement("audio"); c.controls = true; c.src = src; el.querySelector(".pv").appendChild(c); done(true); };
+      a.onerror = () => done(false); a.src = src;
+    } else {
+      const i = new Image();
+      i.onload = () => { el.querySelector(".pv").innerHTML = ""; el.querySelector(".pv").appendChild(i); done(true); };
+      i.onerror = () => done(false); i.src = src;
+    }
+  });
+}
+document.getElementById("sum").textContent = `已放好 0／${total} 個素材`;
+</script>
+</body>
+</html>
