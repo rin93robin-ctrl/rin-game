@@ -31,6 +31,7 @@ ACTS.push({
     {"say": "captain", "lines": ["那麼，演出即將開始。"]},
     {"choice": [{"text": "第一排會不會太近了？", "reply": {"who": "captain", "lines": ["放心，今晚的主角本來就該坐在最近的位置。"]}}, {"text": "可以錄影嗎？", "reply": {"who": "captain", "lines": ["請用眼睛和心記錄。不過……星光並不介意被看見。"]}}, {"text": "有爆米花嗎？", "reply": {"who": "captain", "lines": ["有。星光口味，限量供應。"]}}]},
     {"sfx": "meow", "text": "（星光深處，傳來一聲熟悉的喵。）"},
+    {"ask": "captain", "q": "最後，{name}。進場前，想對一路走來的自己說什麼？", "options": [{"text": "「謝謝你，沒有放棄。」", "score": {"wolf": 2, "dog": 1}, "reply": "說得好。這句台詞，值得一個掌聲。"}, {"text": "「答案在哪，我其實早就知道。」", "score": {"owl": 2, "fox": 1}, "reply": "哈哈，那就請你坐在第一排，看看自己猜對了沒有。"}, {"text": "「接下來，照自己的步調走就好。」", "score": {"cat": 2, "butterfly": 1}, "reply": "劇場不會催你，表演會等你入座。"}]},
     {"clue": "clue8"}
   ]
 });

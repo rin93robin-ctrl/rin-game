@@ -4,52 +4,66 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>凜界異聞錄｜尋找失蹤的羅賓</title>
-<meta name="description" content="RiN凜 三週年企劃・互動小品《凜界異聞錄｜尋找失蹤的羅賓》">
+<meta name="description" content="RiN凜 三週年紀念・守護靈互動小品《凜界異聞錄｜尋找失蹤的羅賓》">
+<meta property="og:title" content="凜界異聞錄｜找到你的守護靈">
+<meta property="og:image" content="assets/bg/title.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app">
   <!-- 標題 -->
   <section id="scr-title" class="screen">
-    <div class="bg" id="title-bg"></div>
-    <div class="stars"></div>
+    <div class="backdrop" id="title-backdrop"></div>
+    <div class="scene contain" id="title-scene"><div class="bg" id="title-bg"></div></div>
+    <div class="vignette"></div>
     <div class="title-box">
-      <img id="title-logo" alt="">
       <div id="title-text">
         <h1 id="t-title"></h1>
         <p class="sub" id="t-sub"></p>
       </div>
       <p class="tag" id="t-tag"></p>
       <button class="btn big" id="btn-start">開始旅程</button>
-      <button class="btn ghost" id="btn-reset-open">重新開始</button>
+      <div class="title-row">
+        <button class="btn ghost" id="btn-dex-title">守護靈圖鑑</button>
+        <button class="btn ghost" id="btn-reset-open">重新開始</button>
+      </div>
     </div>
   </section>
 
   <!-- 旅途地圖 -->
   <section id="scr-map" class="screen">
-    <div class="bg map-bg"></div>
+    <div class="scene"><div class="bg" id="map-bg"></div></div>
+    <div class="vignette strong"></div>
     <header class="topbar">
       <button class="icon" id="map-home" aria-label="回標題">⌂</button>
       <span class="top-title">旅途地圖</span>
       <span class="spacer"></span>
+      <button class="icon" data-open="dex" aria-label="守護靈圖鑑">✦</button>
       <button class="icon" data-open="notebook" aria-label="線索手帳">📜</button>
       <button class="icon" data-open="settings" aria-label="設定">⚙</button>
     </header>
-    <div class="paw-count" id="paw-count"></div>
-    <ol class="act-list" id="act-list"></ol>
-    <div class="finale-card" id="finale-card"></div>
+    <div class="map-body">
+      <div class="journey">
+        <div class="j-head"><span id="j-name"></span><span id="j-pct"></span></div>
+        <div class="j-bar"><i id="j-fill"></i></div>
+        <div class="j-sub" id="j-sub"></div>
+      </div>
+      <ol class="act-list" id="act-list"></ol>
+      <button class="finale-card" id="finale-card"></button>
+    </div>
   </section>
 
   <!-- 遊戲 -->
   <section id="scr-play" class="screen">
-    <div class="bg" id="play-bg"></div>
-    <div class="stage">
-      <div class="stand left" id="stand-left"></div>
-      <div class="stand right" id="stand-right"></div>
+    <div class="backdrop" id="play-backdrop"></div>
+    <div class="scene" id="play-scene">
+      <div class="bg" id="play-bg"></div>
+      <div class="explore-layer" id="explore-layer"></div>
+      <button class="paw-egg" id="paw-egg" aria-label="爪印"></button>
     </div>
-    <button class="paw-egg" id="paw-egg" aria-label="爪印"></button>
+    <div class="stand" id="stand"></div>
     <header class="topbar">
       <button class="icon" id="play-back" aria-label="回地圖">←</button>
       <span class="top-title" id="act-label"></span>
@@ -58,6 +72,14 @@
       <button class="icon" data-open="notebook" aria-label="線索手帳">📜</button>
       <button class="icon" data-open="settings" aria-label="設定">⚙</button>
     </header>
+    <div class="hud" id="hud">
+      <div class="hud-clues" id="hud-clues"></div>
+      <div class="hud-spirit"><div class="hud-sil" id="hud-sil"></div><span id="hud-pct"></span></div>
+    </div>
+    <div class="explore-bar" id="explore-bar">
+      <p id="explore-prompt"></p>
+      <div class="explore-foot"><span id="explore-count"></span><button class="btn" id="explore-go">繼續前進</button></div>
+    </div>
     <div class="dialog" id="dialog">
       <div class="nametag" id="nametag"></div>
       <div class="text" id="text"></div>
@@ -66,7 +88,33 @@
     <div class="choices" id="choices"></div>
   </section>
 
-  <!-- 覆蓋層 -->
+  <!-- 結果 -->
+  <section id="scr-result" class="screen">
+    <div class="scene"><div class="bg" id="result-bg"></div></div>
+    <div class="vignette strong"></div>
+    <div class="result-wrap">
+      <div class="result-img"><img id="result-img" alt="守護靈結果圖"></div>
+      <div class="result-side">
+        <div class="r-kicker">感應度 100%</div>
+        <h2 id="r-name"></h2>
+        <p id="r-oracle"></p>
+        <div class="r-toggle">
+          <button class="chip on" data-ratio="post">貼文 4:5</button>
+          <button class="chip" data-ratio="story">限動 9:16</button>
+        </div>
+        <button class="btn" id="r-save">下載圖片</button>
+        <button class="btn" id="r-share">分享</button>
+        <button class="btn ghost" id="r-copy">複製分享文字</button>
+        <div class="r-row">
+          <button class="btn ghost" id="r-letter">羅賓的信</button>
+          <button class="btn ghost" id="r-dex">圖鑑</button>
+          <button class="btn ghost" id="r-map">地圖</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="reveal" id="reveal"><div class="rv-glow"></div><div class="rv-sil" id="rv-sil"></div><div class="rv-name" id="rv-name"></div></div>
   <div class="overlay" id="ov"><div class="panel" id="ov-panel"></div></div>
   <div class="toast" id="toast"></div>
 </div>
@@ -74,6 +122,7 @@
 <!-- 資料（可自由編輯）-->
 <script src="data/settings.js"></script>
 <script src="data/assets.js"></script>
+<script src="data/spirits.js"></script>
 <script src="data/acts/act1.js"></script>
 <script src="data/acts/act2.js"></script>
 <script src="data/acts/act3.js"></script>
@@ -85,6 +134,7 @@
 <!-- 程式（一般不用改）-->
 <script src="js/audio.js"></script>
 <script src="js/puzzles.js"></script>
+<script src="js/card.js"></script>
 <script src="js/game.js"></script>
 </body>
 </html>

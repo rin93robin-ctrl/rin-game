@@ -27,6 +27,7 @@
 <div id="out"></div>
 <script src="data/settings.js"></script>
 <script src="data/assets.js"></script>
+<script src="data/spirits.js"></script>
 <script>
 const out = document.getElementById("out"), groups = [];
 const label = { title: "標題畫面", char: "立繪", act: "各幕背景／BGM", clue: "線索卡 ICON", ui: "介面", sfx: "音效" };
@@ -38,7 +39,10 @@ function walk(obj, prefix, list) {
   }
 }
 let ok = 0, total = 0;
-for (const [g, obj] of Object.entries(ASSETS)) {
+const ALL = Object.assign({}, ASSETS); delete ALL.spiritPlaceholder;
+ALL.spirit = Object.fromEntries(SPIRITS.map(s => [s.name, s.art]));
+label.spirit = "守護靈立繪（沒放會用暫代剪影）"; label.charFallback = "暫代立繪"; label.finale = "終章";
+for (const [g, obj0] of Object.entries(ALL)) { const obj = typeof obj0 === "string" ? { [g]: obj0 } : obj0; if (typeof obj0 === "boolean") continue;
   const list = []; walk(obj, "", list);
   out.insertAdjacentHTML("beforeend", `<h2>${label[g] || g}</h2>`);
   const grid = document.createElement("div"); grid.className = "grid"; out.appendChild(grid);
