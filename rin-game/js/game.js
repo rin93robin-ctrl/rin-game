@@ -56,7 +56,10 @@
     const portrait = H > W;
     document.querySelectorAll(".scene").forEach(s => {
       // 直式手機探索時：整張背景完整顯示（避免光點跑出畫面）
-      if (portrait && s.classList.contains("contain")) { const cw = W, ch = W / (s.id === "title-scene" ? 1754 / 1241 : R); s.style.width = cw + "px"; s.style.height = ch + "px"; s.style.left = "0px"; s.style.top = Math.max(70, (H - ch) * 0.32) + "px"; }
+      const cr = s.id === "title-scene" ? 1754 / 1241 : R;
+      if (portrait && s.classList.contains("contain")) { const cw = W, ch = W / cr; s.style.width = cw + "px"; s.style.height = ch + "px"; s.style.left = "0px"; s.style.top = Math.max(70, (H - ch) * 0.32) + "px"; }
+      // 比 16:9 還寬的螢幕：完整顯示整張圖（兩側用模糊背景補），避免上下被裁掉
+      else if (!portrait && s.classList.contains("contain") && W / H > cr) { const ch = H, cw = H * cr; s.style.width = cw + "px"; s.style.height = ch + "px"; s.style.left = (W - cw) / 2 + "px"; s.style.top = "0px"; }
       else { s.style.width = w + "px"; s.style.height = hh + "px"; s.style.left = (W - w) / 2 + "px"; s.style.top = (H - hh) / 2 + "px"; }
     });
     app.classList.toggle("portrait", portrait);
@@ -306,7 +309,7 @@
       def.spots.forEach(s => {
         const sp = SP.find(x => x.id === s.spirit); if (!sp) return;
         const b = h("button", "wisp"); b.style.left = s.x + "%"; b.style.top = s.y + "%"; b.style.setProperty("--c", sp.color);
-        b.innerHTML = `<i></i><img src="${silSrc(sp)}" alt="">`;
+        b.innerHTML = `<i></i>`;
         b.onclick = e => {
           e.stopPropagation();
           if (!found.has(s.spirit)) { found.add(s.spirit); if (!save.forest.includes(s.spirit)) { save.forest.push(s.spirit); persist(); } }

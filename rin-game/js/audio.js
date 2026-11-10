@@ -4,6 +4,8 @@ window.Sound = (function () {
   const vol = { bgm: 0.6, sfx: 0.8 };
   const missing = new Set();
 
+  // iPhone 靜音鍵開著時也要能播 BGM（Safari 16.4+）
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
   function ac() {
     if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
     if (ctx && ctx.state === "suspended") ctx.resume();
@@ -53,7 +55,9 @@ window.Sound = (function () {
   // BGM：優先用 WebAudio 無縫循環；本機雙擊開啟（file://）或解碼失敗時退回 <audio loop>
   const bufCache = {};
   let cur = null;   // { stop(), setVol(v) }
-  function stopCur() { if (cur) { const c = cur; cur = null; c.stop(); } }
+  let pending = null;   // 被瀏覽器擋下的播放，下一次點擊時補播
+  ["pointerdown", "keydown", "touchend"].forEach(ev => addEventListener(ev, () => { ac(); if (pending) { const f = pending; pending = null; f(); } }, true));
+  function stopCur() { pending = null; if (cur) { const c = cur; cur = null; c.stop(); } }
   async function loadBuf(src) {
     if (!bufCache[src]) bufCache[src] = fetch(src).then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(b => ac().decodeAudioData(b));
     return bufCache[src];
@@ -71,14 +75,16 @@ window.Sound = (function () {
     bgmSrc = src; stopCur();
     if (!src || missing.has(src)) return;
     const c = ac();
-    if (c && location.protocol !== "file:") {
+    if (c && location.protocol !== "file:" && !/iPhone|iPad|iPod/.test(navigator.userAgent)) {
       try {
         const buf = await loadBuf(src);
         if (bgmSrc !== src) return;
         const s = c.createBufferSource(), g = c.createGain();
         const [ls, le] = trimPoints(buf);
         s.buffer = buf; s.loop = true; s.loopStart = ls; s.loopEnd = le;
-        g.gain.value = 0; s.connect(g).connect(c.destination); s.start(0, ls);
+        if (c.state !== "running") { try { await c.resume(); } catch (e) {} }
+        if (c.state !== "running") throw 0;      // 瀏覽器還沒允許播放 → 改用 <audio>
+        g.gain.setValueAtTime(0, c.currentTime); s.connect(g).connect(c.destination); s.start(0, ls);
         g.gain.linearRampToValueAtTime(vol.bgm, c.currentTime + 1.5);
         cur = {
           stop() { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.9); s.stop(t + 1); },
@@ -87,9 +93,10 @@ window.Sound = (function () {
         return;
       } catch (e) { delete bufCache[src]; }
     }
-    const a = new Audio(src); a.loop = true; a.volume = 0;
-    a.onerror = () => missing.add(src);
-    a.play().then(() => fade(a, vol.bgm)).catch(() => {});
+    const a = new Audio(src); a.loop = true; a.volume = 0; a.preload = "auto";
+    a.onerror = () => { if (bgmSrc === src) bgmSrc = ""; };   // 載入失敗：下次換場景會再試
+    const go = () => a.play().then(() => fade(a, vol.bgm)).catch(() => { pending = go; });
+    go();
     cur = { stop() { fade(a, 0, () => a.pause()); }, setVol(v) { a.volume = v; } };
   }
 
