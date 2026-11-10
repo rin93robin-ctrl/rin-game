@@ -71,14 +71,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .f-s { font-size: .75rem; color: var(--muted); }
 
 /* 遊戲畫面 */
-.stand { position: absolute; z-index: 2; left: 50%; bottom: 0; height: 96%; transform: translateX(-50%); display: flex; align-items: flex-end; justify-content: center; transition: filter .35s, opacity .35s; pointer-events: none; }
-.stand img { height: 100%; width: auto; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--c) 55%, transparent)) drop-shadow(0 10px 24px rgba(0, 0, 0, .6)); }
+.stand { position: absolute; z-index: 2; left: 50%; bottom: 0; height: var(--stand-h, 72%); padding: 30px 40px 0; transform: translateX(-50%); display: flex; align-items: flex-start; justify-content: center; overflow: hidden; transition: filter .35s, opacity .35s; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent); mask-image: linear-gradient(to bottom, #000 80%, transparent); }
+.stand img { height: calc(100% / var(--crop, .64)); width: auto; flex: none; filter: drop-shadow(0 0 14px color-mix(in srgb, var(--c) 55%, transparent)) drop-shadow(0 10px 24px rgba(0, 0, 0, .6)); }
 .stand.pop { animation: standIn .35s ease; }
 @keyframes standIn { from { opacity: .3; transform: translateX(-50%) translateY(10px); } }
 .stand.dim { filter: brightness(.45) saturate(.6); }
 .stand.hide { opacity: 0; }
-.temp-tag { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); padding: 3px 12px; border-radius: 99px; font-size: .72rem; background: rgba(0, 0, 0, .55); border: 1px solid var(--c); color: var(--c); white-space: nowrap; }
-#app.portrait .stand { height: 76%; }
+.temp-tag { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 3px 12px; border-radius: 99px; font-size: .72rem; background: rgba(0, 0, 0, .55); border: 1px solid var(--c); color: var(--c); white-space: nowrap; }
+#app.portrait .stand { --stand-h: 56%; bottom: 0; }
 
 .hud { position: relative; z-index: 6; display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 auto; padding: 4px 14px; border-radius: 99px; background: rgba(10, 8, 30, .55); backdrop-filter: blur(6px); border: 1px solid rgba(233, 201, 138, .25); }
 .hud-clues { display: flex; gap: 6px; }
@@ -227,7 +227,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .card.wrong { border-color: var(--bad); animation: shake .3s; }
 .card.used { opacity: .25; pointer-events: none; }
 .card.empty { opacity: .35; border-style: dashed; }
-.card.big { width: 160px; margin: 12px auto 6px; padding: 12px; }
+.card.big { width: min(340px, 100%); margin: 12px auto 6px; padding: 10px; }
+.card.big .card-ic { aspect-ratio: 16/9; }
+.clue-img { width: 100%; max-height: 190px; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--line); }
 .card.big .card-name { font-family: var(--serif); font-size: 1rem; min-height: 0; }
 .card.big .card-ic span { font-size: 3rem; }
 .clue-get { animation: pop .45s cubic-bezier(.2, 1.4, .4, 1); }
@@ -266,7 +268,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .card.wrong { border-color: var(--bad); animation: shake .3s; }
 .card.used { opacity: .25; pointer-events: none; }
 .card.empty { opacity: .35; border-style: dashed; }
-.card.big { width: 160px; margin: 12px auto 6px; padding: 12px; }
+.card.big { width: min(340px, 100%); margin: 12px auto 6px; padding: 10px; }
+.card.big .card-ic { aspect-ratio: 16/9; }
+.clue-img { width: 100%; max-height: 190px; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--line); }
 .card.big .card-name { font-family: var(--serif); font-size: 1rem; min-height: 0; }
 .card.big .card-ic span { font-size: 3rem; }
 .clue-get { animation: pop .45s cubic-bezier(.2, 1.4, .4, 1); }

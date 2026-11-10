@@ -70,7 +70,7 @@ window.Card = (function () {
     const x = c.getContext("2d");
     const text = [S.title, "守護靈鑑定書", o.name, "的守護靈", sp.name, sp.oracle, sp.keys.join(""), S.share.hashtags, S.share.handle, S.share.footer, "最合拍的守護靈：", "線索感應度No.0123456789%黑貓密語"].join("");
     try { await Promise.all([document.fonts.load(`700 60px ${SERIF}`, text), document.fonts.load(`900 90px ${SERIF}`, text), document.fonts.load(`500 30px ${SERIF}`, text)]); } catch (e) {}
-    const [bg, logo, frame, si] = await Promise.all([load(window.ASSETS.finale.bg), load(window.ASSETS.ui.logo), load(window.ASSETS.ui.cardFrame), spiritImage(sp)]);
+    const [bg, logo, frame, si, ...clues] = await Promise.all([load(window.ASSETS.finale.bg), load(window.ASSETS.ui.logo), load(window.ASSETS.ui.cardFrame), spiritImage(sp), ...Object.values(window.ASSETS.clue).map(load)]);
 
     // 背景：劇場舞台 + 藍紫漸層
     x.fillStyle = "#0c0820"; x.fillRect(0, 0, W, H);
@@ -144,8 +144,15 @@ window.Card = (function () {
     const m = window.SPIRITS.find(s => s.id === sp.match);
     if (m) glowText(x, `最合拍的守護靈：${m.name}`, 25, 1144, { weight: 500, color: "#bfb0e0", blur: 0 });
     // 線索列
-    for (let i = 0; i < 8; i++) { const cx = 540 - 7 * 26 + i * 52; diamond(x, cx, 1182, 11, "rgba(233,201,138,.85)"); star4(x, cx, 1182, 5, "#fff"); }
-    glowText(x, "線索 8／8 ・ 守護靈感應度 100%", 22, 1220, { weight: 500, color: "#cbbbe8", blur: 0, spacing: 2 });
+    for (let i = 0; i < 8; i++) {
+      const im = clues[i], tw = 72, th = 40, cx = 540 + (i - 3.5) * (tw + 10);
+      if (im) {
+        x.save(); x.beginPath(); x.roundRect(cx - tw / 2, 1162, tw, th, 6); x.clip();
+        const s = Math.max(tw / im.width, th / im.height); x.drawImage(im, cx - im.width * s / 2, 1182 - im.height * s / 2, im.width * s, im.height * s);
+        x.restore(); x.strokeStyle = alpha("#e9c98a", 0.8); x.lineWidth = 1.5; x.beginPath(); x.roundRect(cx - tw / 2, 1162, tw, th, 6); x.stroke();
+      } else { diamond(x, cx, 1182, 11, "rgba(233,201,138,.85)"); star4(x, cx, 1182, 5, "#fff"); }
+    }
+    glowText(x, "線索 8／8 ・ 守護靈感應度 100%", 22, 1230, { weight: 500, color: "#cbbbe8", blur: 0, spacing: 2 });
     x.restore();
 
     // 底部

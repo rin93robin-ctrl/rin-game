@@ -11,6 +11,7 @@ window.ASSETS = {
 
   // 立繪（透明背景 PNG／WebP）。合作主播的檔案還沒到之前，自動用 charFallback 暫代。
   charFallback: "assets/char/_rin_temp.webp",
+  standCrop: 0.64,   // 立繪只顯示上面 64%（約到腰部＝半身）；想多露一點就調大，最多 1
   char: {
     rin:       "assets/char/rin.webp",
     fairy:     "assets/char/fairy.png",
@@ -39,12 +40,12 @@ window.ASSETS = {
   // 守護靈：你畫的立繪路徑寫在 data/spirits.js 的 art；沒放就用這裡的暫代剪影
   spiritPlaceholder: "assets/spirit/_placeholder/{id}.svg",
 
-  // 線索卡 ICON（方形 PNG，512px）
+  // 線索卡圖（16:9，小卡會自動裁中間）
   clue: {
-    clue1: "assets/icon/clue1.png", clue2: "assets/icon/clue2.png",
-    clue3: "assets/icon/clue3.png", clue4: "assets/icon/clue4.png",
-    clue5: "assets/icon/clue5.png", clue6: "assets/icon/clue6.png",
-    clue7: "assets/icon/clue7.png", clue8: "assets/icon/clue8.png"
+    clue1: "assets/icon/clue1.jpg", clue2: "assets/icon/clue2.jpg",
+    clue3: "assets/icon/clue3.jpg", clue4: "assets/icon/clue4.jpg",
+    clue5: "assets/icon/clue5.jpg", clue6: "assets/icon/clue6.jpg",
+    clue7: "assets/icon/clue7.jpg", clue8: "assets/icon/clue8.jpg"
   },
 
   ui: {

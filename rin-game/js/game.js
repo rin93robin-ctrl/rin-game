@@ -69,6 +69,7 @@
     egg.style.left = x + "%"; egg.style.top = a.paw.y + "%";
   }
   addEventListener("resize", fitScenes); fitScenes();
+  document.documentElement.style.setProperty("--crop", A.standCrop || 0.64);
 
   const clueDef = id => (ACTS.find(a => a.clue.id === id) || {}).clue || { id, name: id, desc: "" };
   function clueCard(id, small) {
@@ -523,7 +524,7 @@
           const c = clueCard(a.clue.id);
           c.onclick = () => {
             const ask = askOf(a), ci = save.choices[a.id], ch = S.characters[a.role] || {};
-            detail.innerHTML = `<b>${a.clue.name}</b><br>${a.clue.desc}<br><small>第${CN[a.id]}章・${a.title}・來自${ch.name}${ci != null ? `<br>你的抉擇：${esc(fill(ask.options[ci].text))}` : ""}</small>`;
+            detail.innerHTML = `<img class="clue-img" src="${A.clue[a.clue.id]}" alt="" onerror="this.remove()"><b>${a.clue.name}</b><br>${a.clue.desc}<br><small>第${CN[a.id]}章・${a.title}・來自${ch.name}${ci != null ? `<br>你的抉擇：${esc(fill(ask.options[ci].text))}` : ""}</small>`;
           };
           grid.appendChild(c);
         } else grid.appendChild(h("div", "card empty", `<div class="card-ic"><span>？</span></div><div class="card-name">尚未取得</div>`));
