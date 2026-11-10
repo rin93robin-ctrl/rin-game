@@ -10,12 +10,13 @@ window.SPIRITS = [
   { id: "horse",     no: 5, name: "風鬃馬", keys: ["自由", "勇敢", "行動派"],         oracle: "想去的地方，牠會載你去。",                 forest: "林間小徑傳來輕輕的蹄聲。",               color: "#7fe0b0", match: "butterfly", art: "assets/spirit/horse.png" },
   { id: "butterfly", no: 6, name: "幻光蝶", keys: ["感性", "蛻變", "創造力"],         oracle: "每一次改變，牠都看在眼裡。",               forest: "跟著光點飛舞的翅膀。",                   color: "#ff9be6", match: "horse",     art: "assets/spirit/butterfly.png" },
   { id: "owl",       no: 7, name: "夜語鴞", keys: ["冷靜", "洞察", "愛思考"],         oracle: "你想不通的時候，牠已經看見答案。",         forest: "高處枝頭，有顆頭轉過來看了你一眼。",     color: "#8c95ff", match: "deer",      art: "assets/spirit/owl.png" },
-  { id: "deer",      no: 8, name: "森息鹿", keys: ["溫柔", "療癒", "善於傾聽"],       oracle: "累了就停下來，牠會守著你。",               forest: "湖邊，一道低頭喝水的影子。",             color: "#fff0d6", match: "owl",       art: "assets/spirit/deer.png" }
+  { id: "deer",      no: 8, name: "森息鹿", keys: ["溫柔", "療癒", "善於傾聽"],       oracle: "累了就停下來，牠會守著你。",               forest: "湖邊，一道低頭喝水的影子。",             color: "#fff0d6", match: "owl",       art: "assets/spirit/deer.png" },
+  { id: "kiwi",      no: 9, name: "星芽奇異鳥", keys: ["踏實", "樂天", "照自己的步調"], oracle: "慢慢走也沒關係，牠會陪你走到每個明天。", forest: "落葉堆裡，一團毛球低頭啄了啄地面。", color: "#c6e07a", match: "deer",      art: "assets/spirit/kiwi.png" }
 ];
 
-// 圖鑑第 09 張：完成終章後解鎖，不會是玩家的結果
+// 圖鑑第 10 張：完成終章後解鎖，不會是玩家的結果
 window.ROBIN_CARD = {
-  id: "robin", no: 9, name: "黑貓羅賓", sub: "凜的守護靈",
+  id: "robin", no: 10, name: "黑貓羅賓", sub: "凜的守護靈",
   keys: ["傲嬌", "愛睡", "一直都在"], oracle: "牠從來沒有離開，只是在等她回頭。",
   color: "#c08cff", art: "assets/spirit/robin.jpg"
 };

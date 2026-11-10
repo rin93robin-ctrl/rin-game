@@ -26,12 +26,13 @@
     ACTS.forEach(a => { const n = askOf(a), c = save.choices[a.id]; if (n && c != null && n.options[c]) Object.entries(n.options[c].score).forEach(([k, v]) => s[k] = (s[k] || 0) + v); });
     return s;
   }
-  const primaryOf = id => { const a = ACTS.find(x => x.id === id), c = save.choices[id]; if (!a || c == null) return null; const sc = askOf(a).options[c].score; return Object.keys(sc).find(k => sc[k] >= 2); };
+  const pickOf = (id, lvl) => { const a = ACTS.find(x => x.id === id), c = save.choices[id]; if (!a || c == null) return null; const sc = askOf(a).options[c].score; return Object.keys(sc).find(k => sc[k] === lvl); };
   function topSpirit() {
     const s = scores(), max = Math.max(...Object.values(s));
     const tied = SP.filter(x => s[x.id] === max).map(x => x.id);
     if (tied.length === 1) return SP.find(x => x.id === tied[0]);
-    for (const id of [8, 1]) { const p = primaryOf(id); if (p && tied.includes(p)) return SP.find(x => x.id === p); }
+    // 同分：從第八章往回找，先看 +2、再看 +1 落在誰身上
+    for (const lvl of [2, 1]) for (let id = ACTS.length; id >= 1; id--) { const p = pickOf(id, lvl); if (p && tied.includes(p)) return SP.find(x => x.id === p); }
     return SP.find(x => x.id === tied[0]);
   }
   const silSrc = sp => A.spiritPlaceholder.replace("{id}", sp.id);
@@ -158,7 +159,7 @@
     const n = ACTS.filter(a => save.done[a.id]).length, pct = Math.round((n + (save.finaleDone ? 1 : 0)) / (ACTS.length + 1) * 100);
     $("j-name").textContent = `旅人　${save.name || S.defaultName}`; $("j-pct").textContent = `旅途進度 ${pct}%`;
     $("j-fill").style.width = pct + "%";
-    $("j-sub").innerHTML = `線索 ${save.clues.length}／8　・　隱藏爪印 ${save.paws.length}／8　・　圖鑑 ${save.dex.length}／8`;
+    $("j-sub").innerHTML = `線索 ${save.clues.length}／8　・　隱藏爪印 ${save.paws.length}／8　・　圖鑑 ${save.dex.length}／${SP.length}`;
     const list = $("act-list"); list.innerHTML = "";
     ACTS.forEach(a => {
       const st = actState(a), ch = S.characters[a.role] || {};
@@ -480,7 +481,7 @@
     return openOv((p, close) => {
       p.classList.add("dex");
       p.appendChild(h("h2", "pz-title", "守護靈圖鑑"));
-      p.appendChild(h("p", "pz-prompt", `已遇見 ${save.dex.length}／8。重玩章節、改變旅人抉擇，就有機會遇見其他守護靈。`));
+      p.appendChild(h("p", "pz-prompt", `已遇見 ${save.dex.length}／${SP.length}。重玩章節、改變旅人抉擇，就有機會遇見其他守護靈。`));
       const grid = h("div", "dex-grid"); p.appendChild(grid);
       const detail = h("div", "dex-detail", "<p class='clue-desc'>點選卡片查看</p>");
       [...SP, ROBIN].forEach(sp => {

@@ -35,7 +35,7 @@ ACTS.push({
     {"say": "rin", "lines": ["好吧。", "看來我找到下一個方向了。"]},
     {"say": "librarian", "lines": ["如果妳真的要去找她，請帶上這本書。", "也許書中記載的守護靈契約，能幫妳理解那些看不見的存在。", "占卜師的店位於城市另一端的月桂街。"]},
     {"choice": [{"text": "這本書可以借多久？", "reply": {"who": "librarian", "lines": ["借到妳找到答案為止。逾期費……就用一個故事抵吧。"]}}, {"text": "我可以偷看一下你身後嗎？", "reply": {"who": "librarian", "lines": ["……請不要。我今晚還想睡得著。"]}}, {"text": "我先睡一覺再出發可以嗎？", "reply": {"who": "librarian", "lines": ["閱讀區有軟墊，但請不要打呼，書會被吵醒的。"]}}]},
-    {"ask": "librarian", "q": "噓——{name}，這裡的書會挑讀者。哪一本朝你飛過來了？", "options": [{"text": "《會發光的夢境圖鑑》", "score": {"butterfly": 2, "owl": 1}, "reply": "那本書很挑人，看來它喜歡你。"}, {"text": "《世界上所有的路》", "score": {"horse": 2, "wolf": 1}, "reply": "那本書沒有最後一頁，路還在寫。"}, {"text": "《獨自旅行也不寂寞》", "score": {"cat": 2, "deer": 1}, "reply": "它通常只在深夜才肯被翻開。"}]},
+    {"ask": "librarian", "q": "噓——{name}，這裡的書會挑讀者。哪一本朝你飛過來了？", "options": [{"text": "《會發光的夢境圖鑑》", "score": {"butterfly": 2, "owl": 1}, "reply": "那本書很挑人，看來它喜歡你。"}, {"text": "《世界上所有的路》", "score": {"horse": 2, "deer": 1}, "reply": "那本書沒有最後一頁，路還在寫。"}, {"text": "《獨自旅行也不寂寞》", "score": {"cat": 2, "kiwi": 1}, "reply": "它通常只在深夜才肯被翻開。"}]},
     {"clue": "clue4"}
   ]
 });
