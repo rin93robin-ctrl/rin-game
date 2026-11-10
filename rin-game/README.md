@@ -32,6 +32,7 @@ RiN凜 三週年紀念互動小品。跟著凜走完八章，最後找到屬於�
 | 終章／結果圖背景 | `assets/bg/finale.jpg` | 劇場舞台 |
 | 凜 | `assets/char/rin.webp` | 已去背（另有 `rin_closed`、`rin_shadow` 兩個表情備用） |
 | 合作主播 | `assets/char/fairy.png` 等 | **還沒放** → 自動用 `_rin_temp.webp`（凜的立繪）暫代，畫面會標「暫代立繪」 |
+| BGM | `assets/bgm/title.mp3`、`act1`～`act8`、`finale` | 程式原創合成的 10 首奇幻＋懸疑配樂（約 1 分鐘、可無縫循環）；想換成正式配樂直接覆蓋同檔名即可 |
 | 守護靈 ICON | `assets/spirit/icon/*.svg` | A 可愛版 9 款＋黑貓羅賓（深色身體＋紫色邊緣光） |
 | 守護靈插畫（選用） | `assets/spirit/cat.png` 等 | 還沒放；放了之後結果圖會改用插畫，沒放就用 ICON |
 
@@ -41,7 +42,7 @@ RiN凜 三週年紀念互動小品。跟著凜走完八章，最後找到屬於�
 
 - 8 位合作主播立繪 → 放 `assets/char/`，檔名照 `data/assets.js`（fairy、knight、cyber、librarian、fortune、alchemist、singer、captain）
 - 9 張守護靈立繪（透明背景，1200px 以上）→ 放 `assets/spirit/`，檔名 cat、dog、wolf、fox、horse、butterfly、owl、deer、kiwi `.png`
-- （選用）去背標準字 `assets/ui/logo.png`、拱門卡框 `assets/ui/card_frame.png`（1080×1350 透明 PNG）、線索 ICON `assets/icon/clue1～8.png`、BGM、音效
+- （選用）去背標準字 `assets/ui/logo.png`、拱門卡框 `assets/ui/card_frame.png`（1080×1350 透明 PNG）、音效
 
 ## 要改文字去哪裡
 

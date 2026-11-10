@@ -1,6 +1,6 @@
 // 音效與 BGM。缺檔時自動靜音，貓叫與音符用 WebAudio 合成。
 window.Sound = (function () {
-  let ctx = null, bgmEl = null, bgmSrc = "";
+  let ctx = null, bgmSrc = "";
   const vol = { bgm: 0.6, sfx: 0.8 };
   const missing = new Set();
 
@@ -50,16 +50,47 @@ window.Sound = (function () {
     a.play().catch(() => {});
   }
 
-  function bgm(src) {
+  // BGM：優先用 WebAudio 無縫循環；本機雙擊開啟（file://）或解碼失敗時退回 <audio loop>
+  const bufCache = {};
+  let cur = null;   // { stop(), setVol(v) }
+  function stopCur() { if (cur) { const c = cur; cur = null; c.stop(); } }
+  async function loadBuf(src) {
+    if (!bufCache[src]) bufCache[src] = fetch(src).then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }).then(b => ac().decodeAudioData(b));
+    return bufCache[src];
+  }
+  // MP3 編碼器會在頭尾補一點靜音，循環時跳過
+  function trimPoints(buf) {
+    const d = buf.getChannelData(0), n = d.length, lim = Math.min(4000, n >> 2);
+    let s = 0, e = n - 1;
+    while (s < lim && Math.abs(d[s]) < 1e-6) s++;
+    while (e > n - lim && Math.abs(d[e]) < 1e-6) e--;
+    return [s / buf.sampleRate, (e + 1) / buf.sampleRate];
+  }
+  async function bgm(src) {
     if (src === bgmSrc) return;
-    bgmSrc = src;
-    if (bgmEl) { const old = bgmEl; fade(old, 0, () => old.pause()); }
-    bgmEl = null;
+    bgmSrc = src; stopCur();
     if (!src || missing.has(src)) return;
+    const c = ac();
+    if (c && location.protocol !== "file:") {
+      try {
+        const buf = await loadBuf(src);
+        if (bgmSrc !== src) return;
+        const s = c.createBufferSource(), g = c.createGain();
+        const [ls, le] = trimPoints(buf);
+        s.buffer = buf; s.loop = true; s.loopStart = ls; s.loopEnd = le;
+        g.gain.value = 0; s.connect(g).connect(c.destination); s.start(0, ls);
+        g.gain.linearRampToValueAtTime(vol.bgm, c.currentTime + 1.5);
+        cur = {
+          stop() { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.9); s.stop(t + 1); },
+          setVol(v) { g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(v, c.currentTime); }
+        };
+        return;
+      } catch (e) { delete bufCache[src]; }
+    }
     const a = new Audio(src); a.loop = true; a.volume = 0;
     a.onerror = () => missing.add(src);
-    bgmEl = a;
     a.play().then(() => fade(a, vol.bgm)).catch(() => {});
+    cur = { stop() { fade(a, 0, () => a.pause()); }, setVol(v) { a.volume = v; } };
   }
 
   function fade(a, to, done) {
@@ -70,7 +101,7 @@ window.Sound = (function () {
     }, 40);
   }
 
-  function setVol(kind, v) { vol[kind] = v; if (kind === "bgm" && bgmEl) bgmEl.volume = v; }
+  function setVol(kind, v) { vol[kind] = v; if (kind === "bgm" && cur) cur.setVol(v); }
 
   return { sfx, bgm, tone, setVol, vol, unlock: ac };
 })();

@@ -436,7 +436,7 @@
   let ratio = "post", lastCanvas = null;
   async function showResult() {
     const sp = SP.find(x => x.id === save.result) || topSpirit();
-    paintBg($("result-bg"), A.finale.bg);
+    paintBg($("result-bg"), A.finale.bg); Sound.bgm(A.finale.bgm);
     $("r-name").innerHTML = `<small>${esc(save.name || S.defaultName)} 的守護靈</small>${sp.name}`;
     $("r-oracle").textContent = `「${sp.oracle}」`;
     show("scr-result");
@@ -587,5 +587,6 @@
   }
   document.querySelectorAll("[data-open]").forEach(b => b.onclick = e => { e.stopPropagation(); ({ notebook, settings, dex })[b.dataset.open](); });
 
+  document.addEventListener("visibilitychange", () => { try { const c = Sound.unlock(); if (c) document.hidden ? c.suspend() : c.resume(); } catch (e) {} });
   initTitle();
 })();
