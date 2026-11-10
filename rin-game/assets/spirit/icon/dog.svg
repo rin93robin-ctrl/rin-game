@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200"><rect width="200" height="200" fill="#000"/><path fill="#fff" d="M62 188 C56 156 62 126 82 108 C90 100 98 96 108 96 C128 98 142 120 144 150 L146 188 Z"/>
+<circle cx="116" cy="70" r="27" fill="#fff"/>
+<ellipse cx="146" cy="56" rx="20" ry="13" fill="#fff" transform="rotate(-28 146 56)"/>
+<ellipse cx="100" cy="86" rx="12" ry="22" fill="#fff" transform="rotate(18 100 86)"/>
+<path fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" d="M66 176 C44 172 38 154 46 138"/><path fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M98 62 C88 70 84 92 90 106 C100 104 108 88 110 70"/>
+<circle cx="126" cy="62" r="4.5" fill="#000"/><ellipse cx="162" cy="44" rx="5" ry="4" fill="#000"/>
+<path fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M148 70 Q154 72 158 68"/>
+<path fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M96 108 Q118 118 140 106"/><circle cx="118" cy="120" r="4" fill="#000"/></mask></defs><rect width="200" height="200" fill="#fff" mask="url(#m)"/></svg>

@@ -32,8 +32,8 @@ RiN凜 三週年紀念互動小品。跟著凜走完八章，最後找到屬於�
 | 終章／結果圖背景 | `assets/bg/finale.jpg` | 劇場舞台 |
 | 凜 | `assets/char/rin.webp` | 已去背（另有 `rin_closed`、`rin_shadow` 兩個表情備用） |
 | 合作主播 | `assets/char/fairy.png` 等 | **還沒放** → 自動用 `_rin_temp.webp`（凜的立繪）暫代，畫面會標「暫代立繪」 |
-| 守護靈 | `assets/spirit/cat.png` 等 9 張 | **還沒放** → 用 `_placeholder` 裡的發光剪影暫代 |
-| 羅賓卡 | `assets/spirit/robin.jpg` | 用風格參考資料夾的黑貓圖 |
+| 守護靈 ICON | `assets/spirit/icon/*.svg` | A 可愛版 9 款＋黑貓羅賓（深色身體＋紫色邊緣光） |
+| 守護靈插畫（選用） | `assets/spirit/cat.png` 等 | 還沒放；放了之後結果圖會改用插畫，沒放就用 ICON |
 
 打開 `check.html` 可以看哪些素材已經放好。
 
@@ -69,4 +69,4 @@ RiN凜 三週年紀念互動小品。跟著凜走完八章，最後找到屬於�
 
 進度存在玩家自己的瀏覽器，換裝置不會同步。
 
-暫代守護靈剪影為自繪 SVG，正式版請換成你畫的立繪。
+守護靈 ICON 為自繪 SVG。

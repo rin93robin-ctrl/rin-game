@@ -18,5 +18,5 @@ window.SPIRITS = [
 window.ROBIN_CARD = {
   id: "robin", no: 10, name: "黑貓羅賓", sub: "凜的守護靈",
   keys: ["傲嬌", "愛睡", "一直都在"], oracle: "牠從來沒有離開，只是在等她回頭。",
-  color: "#c08cff", art: "assets/spirit/robin.jpg"
+  color: "#c08cff", art: "assets/spirit/icon/robin.svg"
 };

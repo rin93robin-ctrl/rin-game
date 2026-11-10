@@ -86,7 +86,7 @@
   // 守護靈圖：有畫好的立繪就用，沒有就用暫代剪影
   function spiritEl(sp, cls) {
     const el = h("div", "sp-art " + (cls || "")); el.style.setProperty("--c", sp.color);
-    hasImg(sp.art).then(ok => { el.innerHTML = `<img src="${ok ? sp.art : silSrc(sp)}" alt="${sp.name}" class="${ok ? "real" : "sil"}">`; });
+    hasImg(sp.art).then(ok => { el.innerHTML = `<img src="${ok ? sp.art : silSrc(sp)}" alt="${sp.name}" class="${ok && !/\.svg$/.test(sp.art) ? "real" : "sil"}">`; });
     return el;
   }
 

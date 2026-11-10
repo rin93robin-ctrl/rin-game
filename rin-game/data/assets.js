@@ -37,8 +37,9 @@ window.ASSETS = {
   },
   finale: { bg: "assets/bg/finale.jpg", bgm: "assets/bgm/finale.mp3" },  // 劇場舞台（終章＋結果圖背景）
 
-  // 守護靈：你畫的立繪路徑寫在 data/spirits.js 的 art；沒放就用這裡的暫代剪影
-  spiritPlaceholder: "assets/spirit/_placeholder/{id}.svg",
+  // 守護靈 ICON（A 可愛版，白色單色；遊戲裡會自動套上代表色與光暈）
+  // 若之後在 data/spirits.js 的 art 放了完整插畫，結果圖會改用插畫
+  spiritPlaceholder: "assets/spirit/icon/{id}.svg",
 
   // 線索卡圖（16:9，小卡會自動裁中間）
   clue: {
